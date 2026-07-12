@@ -1,5 +1,5 @@
-// Función Netlify: guarda el prospecto del Reto ECO y genera
-// el mensaje de apertura personalizado para el asesor usando Claude API.
+// Función Netlify: guarda el prospecto del Reto ECO y genera con Claude API
+// (1) el mensaje de apertura para el asesor y (2) el reporte completo del médico.
 // Variables de entorno requeridas en Netlify:
 //   SUPABASE_URL, SUPABASE_SERVICE_KEY, ANTHROPIC_API_KEY
 
@@ -58,16 +58,19 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Cuerpo inválido' }) };
   }
 
-  /* ===== 1. Generar mensaje de apertura con Claude ===== */
+  /* ===== 1. Generar mensaje de apertura + reporte con Claude ===== */
   let mensajeApertura = null;
+  let reporteMedico = null;
+
   try {
+    const aciertos = (registro.respuestas_detalle || [])
+      .filter(d => d.correcta)
+      .map(d => T.categorias[d.pregunta] || d.pregunta);
     const areasDebiles = (registro.respuestas_detalle || [])
       .filter(d => !d.correcta)
       .map(d => T.categorias[d.pregunta] || d.pregunta);
 
-    const prompt = `Eres el asesor académico de FMC (Formación Médica Continua), una institución ecuatoriana que dicta un diplomado de ecografía clínica de $608 con clases en vivo, práctica y certificación. Un médico acaba de completar una evaluación gratuita llamada Reto ECO. Escribe el PRIMER mensaje de WhatsApp que el asesor le enviará.
-
-Datos del prospecto:
+    const perfilTexto = `
 - Nombre: ${registro.nombre}
 - País: ${registro.pais}
 - Perfil: ${T.perfil_profesional[registro.perfil_profesional] || registro.perfil_profesional}
@@ -75,21 +78,42 @@ Datos del prospecto:
 - Experiencia en eco: ${T.realiza_ecografias[registro.realiza_ecografias] || 'no indicada'}
 - Etapa profesional: ${T.etapa_profesional[registro.etapa_profesional] || 'no indicada'}
 - Resultado: Nivel ${T.nivel_resultado[registro.nivel_resultado]} (${registro.puntaje_conocimiento}% de conocimiento)
-- Áreas débiles detectadas: ${areasDebiles.length ? areasDebiles.join(', ') : 'ninguna, acertó todo'}
+- Áreas dominadas: ${aciertos.length ? aciertos.join(', ') : 'ninguna'}
+- Áreas débiles: ${areasDebiles.length ? areasDebiles.join(', ') : 'ninguna, acertó todo'}
 - Objetivo al aprender ecografía: ${T.objetivo_principal[registro.objetivo_principal] || 'no indicado'}
 - Lo que le impide comenzar: ${T.objecion_principal[registro.objecion_principal] || 'no indicado'}
-- Potencial que él mismo calculó: $${registro.potencial_mensual || 0} mensuales
+- Potencial que él mismo calculó: $${registro.potencial_mensual || 0} mensuales brutos`;
 
-Reglas del mensaje:
-- En español, tono cálido y profesional de colega a colega, tratándolo de "Doctor/Doctora" según corresponda por el nombre.
-- Máximo 90 palabras.
-- Debe demostrar que revisaste SU resultado: menciona su nivel y UNA área débil concreta (si acertó todo, felicítalo por su base).
-- Aborda sutilmente su objeción principal sin sonar vendedor (ej. si no tiene equipo: se puede iniciar la formación antes de esa inversión; si es el costo: existen opciones de pago; si duda de poder aprender: el programa va de lo básico a lo clínico).
-- Conecta con SU objetivo declarado.
-- Cierra ofreciendo enviarle su reporte completo y una orientación breve sin compromiso, con una pregunta simple que invite a responder.
-- NO prometas ingresos ni empleo garantizado. NO menciones el precio todavía. NO uses emojis en exceso (máximo 1).
+    const prompt = `Eres el asesor académico de FMC (Formación Médica Continua), institución ecuatoriana que dicta un diplomado de ecografía clínica de $608 con clases en vivo, práctica y certificación. Un médico completó la evaluación gratuita "Reto ECO".
 
-Responde ÚNICAMENTE con el texto del mensaje, sin comillas ni preámbulos.`;
+Datos del prospecto:
+${perfilTexto}
+
+Genera DOS textos:
+
+TEXTO 1 - "mensaje_apertura": El PRIMER mensaje de WhatsApp que el asesor le enviará.
+Reglas: español, tono cálido y profesional de colega a colega ("Doctor/Doctora" según el nombre). Máximo 90 palabras. Demuestra que revisaste SU resultado: menciona su nivel y UNA área débil concreta (si acertó todo, felicita su base). Aborda sutilmente su objeción sin sonar vendedor (sin equipo → puede formarse antes de esa inversión; costo → existen opciones de pago; inseguridad → el programa va de lo básico a lo clínico). Conecta con SU objetivo. Cierra ofreciendo su reporte completo y una orientación breve sin compromiso, con una pregunta simple. NO prometas ingresos ni empleo. NO menciones precio. Máximo 1 emoji.
+
+TEXTO 2 - "reporte": El REPORTE COMPLETO que el médico recibirá por WhatsApp. Formato para WhatsApp: usa *asteriscos* para negritas, guiones para listas, saltos de línea entre secciones. Entre 200 y 300 palabras. Estructura:
+*REPORTE RETO ECO – FMC*
+*[Nombre del médico]*
+
+*Tu nivel:* [nivel] ([X]% de conocimiento) + 1-2 líneas interpretando qué significa para su práctica.
+
+*Fortalezas:* lista de áreas dominadas (si no hay, omite la sección y sé constructivo).
+
+*Áreas a fortalecer:* lista de áreas débiles con 1 línea de por qué cada una importa clínicamente (si no hay, felicita).
+
+*Tu potencial:* el cálculo de $X mensuales que él mismo estimó, aclarando en una línea que es una simulación orientativa que depende de demanda, normativa y costos locales.
+
+*Recomendación:* 2-3 líneas personalizadas a su nivel, objetivo y etapa profesional. Si su etapa es de búsqueda de empleo o mejora laboral, menciona que la ecografía es una competencia valorada en el mercado (sin garantizar empleo).
+
+*Siguiente paso:* invitación cordial a una orientación gratuita con FMC sobre cómo desarrollar esta habilidad de forma estructurada.
+
+Tono: educativo, honesto, profesional. NO promesas de ingresos ni empleo garantizado. NO menciones el precio del diplomado en el reporte.
+
+Responde ÚNICAMENTE con un JSON válido, sin markdown ni backticks:
+{"mensaje_apertura": "...", "reporte": "..."}`;
 
     const respIA = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -100,26 +124,36 @@ Responde ÚNICAMENTE con el texto del mensaje, sin comillas ni preámbulos.`;
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 400,
+        max_tokens: 1500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
 
     if (respIA.ok) {
       const data = await respIA.json();
-      mensajeApertura = (data.content || [])
+      const texto = (data.content || [])
         .map(b => (b.type === 'text' ? b.text : ''))
         .join('')
+        .replace(/```json|```/g, '')
         .trim();
+      try {
+        const parseado = JSON.parse(texto);
+        mensajeApertura = parseado.mensaje_apertura || null;
+        reporteMedico = parseado.reporte || null;
+      } catch (e) {
+        console.error('No se pudo parsear JSON de Claude, guardando texto crudo');
+        mensajeApertura = texto.slice(0, 1000);
+      }
     } else {
       console.error('Error Claude API:', respIA.status, await respIA.text());
     }
   } catch (e) {
-    console.error('Fallo generando mensaje de apertura:', e);
+    console.error('Fallo generando textos:', e);
   }
 
-  /* ===== 2. Guardar en Supabase (con clave de servicio, del lado seguro) ===== */
+  /* ===== 2. Guardar en Supabase ===== */
   registro.mensaje_apertura = mensajeApertura;
+  registro.reporte_medico = reporteMedico;
 
   try {
     const respDB = await fetch(SUPABASE_URL + '/rest/v1/prospectos_eco', {
