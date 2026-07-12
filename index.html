@@ -10,14 +10,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --scan-deep:#0B1520;      /* fondo campo de escaneo */
+    --scan-deep:#0B1520;
     --scan-mid:#122334;
-    --echo:#6FE3D4;           /* eco cian (doppler frío) */
+    --echo:#6FE3D4;
     --echo-dim:#2C7A70;
-    --doppler-warm:#FFB65C;   /* acento cálido doppler */
-    --bone:#F2F5F7;           /* texto principal */
-    --gray-tissue:#93A5B3;    /* texto secundario */
+    --doppler-warm:#FFB65C;
+    --bone:#F2F5F7;
+    --gray-tissue:#93A5B3;
     --card:#0F1E2D;
+    --card-border:rgba(147,165,179,.16);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
@@ -31,177 +32,146 @@
     flex-direction:column;
   }
 
-  /* ---- Sector de ultrasonido (firma visual) ---- */
-  .sector-wrap{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    pointer-events:none;
-    z-index:0;
-  }
-  .sector{
-    position:absolute;
-    top:-32vh;
-    left:50%;
-    transform:translateX(-50%);
-    width:150vw;
-    max-width:900px;
-    aspect-ratio:1/1;
-  }
+  /* ---- Sector de ultrasonido ---- */
+  .sector-wrap{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .sector{position:absolute;top:-32vh;left:50%;transform:translateX(-50%);width:150vw;max-width:900px;aspect-ratio:1/1}
   .sector svg{width:100%;height:100%;display:block}
-  .sweep{
-    transform-origin:50% 8%;
-    animation:sweep 7s ease-in-out infinite alternate;
-  }
-  @keyframes sweep{
-    from{transform:rotate(-24deg)}
-    to{transform:rotate(24deg)}
-  }
-  @media (prefers-reduced-motion: reduce){
-    .sweep{animation:none}
-  }
+  .sweep{transform-origin:50% 8%;animation:sweep 7s ease-in-out infinite alternate}
+  @keyframes sweep{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+  @media (prefers-reduced-motion: reduce){.sweep{animation:none}}
 
-  /* ---- Contenido ---- */
   .shell{
-    position:relative;
-    z-index:1;
-    width:100%;
-    max-width:520px;
-    margin:0 auto;
-    padding:32px 22px 28px;
-    display:flex;
-    flex-direction:column;
-    flex:1;
+    position:relative;z-index:1;width:100%;max-width:520px;
+    margin:0 auto;padding:32px 22px 28px;
+    display:flex;flex-direction:column;flex:1;
   }
-  .brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:8vh;
-  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:8vh}
   .brand-mark{
-    width:34px;height:34px;
-    border-radius:9px;
+    width:34px;height:34px;border-radius:9px;
     background:linear-gradient(145deg,var(--echo) 0%,var(--echo-dim) 100%);
     display:flex;align-items:center;justify-content:center;
     font-family:'Manrope',sans-serif;font-weight:800;font-size:15px;
-    color:var(--scan-deep);
-    letter-spacing:-.5px;
+    color:var(--scan-deep);letter-spacing:-.5px;
   }
   .brand-name{
-    font-family:'Manrope',sans-serif;
-    font-weight:700;font-size:13px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-    color:var(--gray-tissue);
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--gray-tissue);
   }
 
   .eyebrow{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-size:12px;
-    font-weight:600;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--echo);
-    margin-bottom:18px;
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--echo);margin-bottom:18px;
   }
-  .eyebrow::before{
-    content:"";
-    width:22px;height:1px;
-    background:var(--echo);
-    opacity:.7;
-  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--echo);opacity:.7}
 
   h1{
-    font-family:'Manrope',sans-serif;
-    font-weight:800;
-    font-size:clamp(28px,7.4vw,38px);
-    line-height:1.14;
-    letter-spacing:-.5px;
-    margin-bottom:16px;
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(28px,7.4vw,38px);line-height:1.14;
+    letter-spacing:-.5px;margin-bottom:16px;
   }
-  h1 em{
-    font-style:normal;
-    color:var(--echo);
-  }
-  .lead{
-    font-size:16px;
-    line-height:1.6;
-    color:var(--gray-tissue);
-    margin-bottom:30px;
-    max-width:44ch;
-  }
+  h1 em{font-style:normal;color:var(--echo)}
+  .lead{font-size:16px;line-height:1.6;color:var(--gray-tissue);margin-bottom:30px;max-width:44ch}
 
   .cta{
-    display:block;
-    width:100%;
-    padding:17px 20px;
-    border:none;
-    border-radius:14px;
+    display:block;width:100%;padding:17px 20px;border:none;border-radius:14px;
     background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
-    color:#062019;
-    font-family:'Manrope',sans-serif;
-    font-weight:800;
-    font-size:17px;
-    letter-spacing:.01em;
-    cursor:pointer;
+    color:#062019;font-family:'Manrope',sans-serif;font-weight:800;font-size:17px;
+    letter-spacing:.01em;cursor:pointer;
     transition:transform .15s ease, box-shadow .15s ease;
     box-shadow:0 8px 28px rgba(111,227,212,.22);
   }
   .cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(111,227,212,.3)}
   .cta:focus-visible{outline:3px solid var(--doppler-warm);outline-offset:3px}
   .cta:active{transform:translateY(0)}
-  .cta-sub{
-    text-align:center;
-    font-size:13px;
-    color:var(--gray-tissue);
-    margin-top:12px;
-  }
+  .cta-sub{text-align:center;font-size:13px;color:var(--gray-tissue);margin-top:12px}
 
-  .trust{
-    margin-top:34px;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
+  .trust{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .chip{
-    background:var(--card);
-    border:1px solid rgba(147,165,179,.16);
-    border-radius:12px;
-    padding:13px 14px;
-    display:flex;
-    align-items:flex-start;
-    gap:9px;
+    background:var(--card);border:1px solid var(--card-border);
+    border-radius:12px;padding:13px 14px;display:flex;align-items:flex-start;gap:9px;
   }
   .chip svg{flex:none;margin-top:1px}
-  .chip span{
-    font-size:12.5px;
-    line-height:1.4;
-    color:var(--bone);
-    font-weight:500;
-  }
+  .chip span{font-size:12.5px;line-height:1.4;color:var(--bone);font-weight:500}
 
   footer{
-    position:relative;
-    z-index:1;
-    text-align:center;
-    padding:18px 22px 26px;
-    font-size:11.5px;
-    color:var(--gray-tissue);
-    line-height:1.6;
+    position:relative;z-index:1;text-align:center;
+    padding:18px 22px 26px;font-size:11.5px;color:var(--gray-tissue);line-height:1.6;
   }
 
-  @media (min-width:640px){
-    .shell{padding-top:52px}
-    .trust{grid-template-columns:1fr 1fr}
+  /* ================= QUIZ ================= */
+  .hidden{display:none!important}
+
+  .quiz-top{
+    display:flex;align-items:center;gap:14px;margin-bottom:26px;
   }
+  .btn-back{
+    background:var(--card);border:1px solid var(--card-border);
+    color:var(--gray-tissue);width:38px;height:38px;border-radius:11px;
+    font-size:18px;cursor:pointer;flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .btn-back:focus-visible{outline:2px solid var(--echo);outline-offset:2px}
+  .progress-wrap{flex:1}
+  .progress-label{
+    font-size:11px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-tissue);margin-bottom:6px;
+  }
+  .progress-bar{
+    height:6px;background:var(--card);border-radius:99px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,var(--echo-dim),var(--echo));
+    border-radius:99px;transition:width .35s ease;
+  }
+
+  .q-block{
+    font-size:12px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--echo);margin-bottom:10px;
+  }
+  .q-text{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(21px,5.6vw,26px);line-height:1.25;margin-bottom:24px;
+  }
+
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    background:var(--card);border:1.5px solid var(--card-border);
+    border-radius:13px;padding:16px 16px;text-align:left;
+    color:var(--bone);font-size:15.5px;font-weight:500;line-height:1.4;
+    cursor:pointer;transition:border-color .12s ease, background .12s ease, transform .1s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .opt:hover{border-color:var(--echo-dim)}
+  .opt:focus-visible{outline:2px solid var(--echo);outline-offset:2px}
+  .opt.selected{
+    border-color:var(--echo);
+    background:linear-gradient(0deg,rgba(111,227,212,.08),rgba(111,227,212,.08)),var(--card);
+    transform:scale(.995);
+  }
+
+  .fade-in{animation:fadeUp .3s ease}
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* Pantalla de cierre de bloque */
+  .interstitial{text-align:center;padding-top:6vh}
+  .interstitial .icon-ring{
+    width:74px;height:74px;margin:0 auto 22px;border-radius:50%;
+    border:2px solid var(--echo);display:flex;align-items:center;justify-content:center;
+  }
+  .interstitial h2{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:24px;line-height:1.25;margin-bottom:12px;
+  }
+  .interstitial p{font-size:15px;line-height:1.6;color:var(--gray-tissue);max-width:40ch;margin:0 auto 28px}
 </style>
 </head>
 <body>
 
-<!-- Firma visual: sector de ultrasonido con barrido -->
 <div class="sector-wrap" aria-hidden="true">
   <div class="sector">
     <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
@@ -216,15 +186,12 @@
           <stop offset="100%" stop-color="#6FE3D4" stop-opacity="0"/>
         </linearGradient>
       </defs>
-      <!-- abanico del transductor -->
       <path d="M200 32 L38 360 A 210 210 0 0 0 362 360 Z" fill="url(#fan)"/>
-      <!-- arcos de profundidad -->
       <g stroke="#2A445C" stroke-width="1" fill="none" opacity=".5">
         <path d="M117 200 A 118 118 0 0 1 283 200"/>
         <path d="M85 264 A 165 165 0 0 1 315 264"/>
         <path d="M55 330 A 213 213 0 0 1 345 330"/>
       </g>
-      <!-- línea de barrido animada -->
       <g class="sweep">
         <path d="M200 32 L200 372" stroke="url(#beam)" stroke-width="2.5"/>
       </g>
@@ -232,7 +199,8 @@
   </div>
 </div>
 
-<main class="shell">
+<!-- ============ PANTALLA INICIAL ============ -->
+<main class="shell" id="pantallaInicio">
   <div class="brand">
     <div class="brand-mark">F</div>
     <div class="brand-name">FMC · Formación Médica Continua</div>
@@ -267,16 +235,167 @@
   </div>
 </main>
 
-<footer>
+<!-- ============ PANTALLA DEL QUIZ ============ -->
+<main class="shell hidden" id="pantallaQuiz">
+  <div class="quiz-top">
+    <button class="btn-back" id="btnAtras" aria-label="Pregunta anterior">←</button>
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">Pregunta 1</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+  <div id="quizContenido"></div>
+</main>
+
+<!-- ============ CIERRE DE BLOQUE 1 (temporal) ============ -->
+<main class="shell hidden" id="pantallaCierre">
+  <div class="interstitial fade-in">
+    <div class="icon-ring">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </div>
+    <h2>Perfil registrado correctamente</h2>
+    <p>La siguiente etapa —el bloque de conocimiento en ecografía— estará disponible muy pronto. Estamos en construcción.</p>
+    <button class="cta" onclick="location.reload()">Volver al inicio</button>
+  </div>
+</main>
+
+<footer id="piePagina">
   FMC – Formación Médica Continua · Diplomado de Ecografía Clínica<br>
   Esta evaluación es orientativa y no constituye una certificación académica.
 </footer>
 
 <script>
-  document.getElementById('btnIniciar').addEventListener('click', function(){
-    // FASE 3: aquí se iniciará el flujo de preguntas
-    alert('El Reto ECO estará disponible muy pronto. ¡Estamos en construcción!');
+/* ================= ESTADO GLOBAL ================= */
+const respuestas = {};        // aquí se acumulan todas las respuestas
+const TOTAL_PREGUNTAS = 12;   // total del reto completo (para la barra)
+
+/* ================= BLOQUE 1: PERFIL PROFESIONAL ================= */
+const bloque1 = [
+  {
+    id: 'perfil_profesional',
+    bloque: 'Perfil profesional',
+    texto: '¿Cuál es tu perfil profesional?',
+    opciones: [
+      { valor: 'general',      texto: 'Médico general' },
+      { valor: 'rural',        texto: 'Médico rural' },
+      { valor: 'residente',    texto: 'Residente' },
+      { valor: 'especialista', texto: 'Especialista' },
+      { valor: 'emergencia',   texto: 'Médico de emergencia' },
+      { valor: 'otro',         texto: 'Otro profesional de la salud' }
+    ]
+  },
+  {
+    id: 'pacientes_mes',
+    bloque: 'Perfil profesional',
+    texto: '¿Cuántos pacientes atiendes aproximadamente al mes?',
+    opciones: [
+      { valor: 'menos_50',  texto: 'Menos de 50' },
+      { valor: '50_100',    texto: 'Entre 50 y 100' },
+      { valor: '101_200',   texto: 'Entre 101 y 200' },
+      { valor: '201_400',   texto: 'Entre 201 y 400' },
+      { valor: 'mas_400',   texto: 'Más de 400' }
+    ]
+  },
+  {
+    id: 'realiza_ecografias',
+    bloque: 'Perfil profesional',
+    texto: '¿Actualmente realizas ecografías?',
+    opciones: [
+      { valor: 'frecuente',      texto: 'Sí, con frecuencia' },
+      { valor: 'ocasional',      texto: 'Sí, ocasionalmente' },
+      { valor: 'interpreta',     texto: 'Solo observo o interpreto algunos casos' },
+      { valor: 'quiere_aprender',texto: 'No, pero quiero aprender' },
+      { valor: 'nunca',          texto: 'Nunca he tenido contacto con la ecografía' }
+    ]
+  },
+  {
+    id: 'etapa_profesional',
+    bloque: 'Perfil profesional',
+    texto: '¿En qué etapa profesional te encuentras?',
+    opciones: [
+      { valor: 'busca_empleo',   texto: 'Buscando un empleo estable' },
+      { valor: 'mejor_puesto',   texto: 'Empleado, pero quiero un mejor puesto' },
+      { valor: 'consulta_propia',texto: 'Tengo consulta propia y quiero potenciarla' },
+      { valor: 'postgrado_rural',texto: 'Preparando postgrado o año rural' }
+    ]
+  }
+];
+
+/* ================= MOTOR DEL QUIZ ================= */
+let indiceActual = 0;
+const flujo = bloque1;   // en las próximas fases se suman más bloques aquí
+
+const $inicio   = document.getElementById('pantallaInicio');
+const $quiz     = document.getElementById('pantallaQuiz');
+const $cierre   = document.getElementById('pantallaCierre');
+const $contenido= document.getElementById('quizContenido');
+const $fill     = document.getElementById('progressFill');
+const $label    = document.getElementById('progressLabel');
+const $atras    = document.getElementById('btnAtras');
+const $pie      = document.getElementById('piePagina');
+
+document.getElementById('btnIniciar').addEventListener('click', () => {
+  $inicio.classList.add('hidden');
+  $pie.classList.add('hidden');
+  $quiz.classList.remove('hidden');
+  indiceActual = 0;
+  renderPregunta();
+});
+
+$atras.addEventListener('click', () => {
+  if (indiceActual === 0) {
+    // volver a la pantalla inicial
+    $quiz.classList.add('hidden');
+    $inicio.classList.remove('hidden');
+    $pie.classList.remove('hidden');
+  } else {
+    indiceActual--;
+    renderPregunta();
+  }
+});
+
+function renderPregunta(){
+  const p = flujo[indiceActual];
+
+  // barra de progreso sobre el total del reto completo
+  const avance = (indiceActual / TOTAL_PREGUNTAS) * 100;
+  $fill.style.width = Math.max(avance, 4) + '%';
+  $label.textContent = 'Pregunta ' + (indiceActual + 1) + ' de ' + TOTAL_PREGUNTAS;
+
+  let html = '<div class="fade-in">';
+  html += '<div class="q-block">' + p.bloque + '</div>';
+  html += '<div class="q-text">' + p.texto + '</div>';
+  html += '<div class="opts">';
+  p.opciones.forEach(op => {
+    const sel = respuestas[p.id] === op.valor ? ' selected' : '';
+    html += '<button class="opt' + sel + '" data-valor="' + op.valor + '">' + op.texto + '</button>';
   });
+  html += '</div></div>';
+  $contenido.innerHTML = html;
+
+  // listeners de opciones
+  $contenido.querySelectorAll('.opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      respuestas[p.id] = btn.dataset.valor;
+      btn.classList.add('selected');
+      // pequeña pausa para que el usuario vea su selección
+      setTimeout(avanzar, 220);
+    });
+  });
+}
+
+function avanzar(){
+  if (indiceActual < flujo.length - 1) {
+    indiceActual++;
+    renderPregunta();
+  } else {
+    // fin del Bloque 1 (temporal — en Fase 4 continúa el bloque de conocimiento)
+    console.log('Respuestas Bloque 1:', respuestas);
+    $quiz.classList.add('hidden');
+    $cierre.classList.remove('hidden');
+    $pie.classList.remove('hidden');
+  }
+}
 </script>
 
 </body>
