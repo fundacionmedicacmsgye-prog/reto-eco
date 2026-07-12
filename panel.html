@@ -316,6 +316,7 @@ function render(){
         <button class="btn-accion btn-copiar" onclick="copiar('${l.id}')">⧉ Copiar mensaje</button>
         <a class="btn-accion btn-wa" href="${linkWA}" target="_blank" rel="noopener">WhatsApp →</a>
       </div>
+      ${l.reporte_medico ? `<div class="lead-acciones"><button class="btn-accion btn-copiar" onclick="copiarReporte('${l.id}')">📄 Copiar reporte completo del médico</button></div>` : ''}
       <div class="lead-estado">
         <label>Estado:</label>
         <select onchange="cambiarEstado('${l.id}', this.value)">
@@ -343,6 +344,17 @@ function copiar(id){
     const t = document.getElementById('toast');
     t.style.display = 'block';
     setTimeout(() => t.style.display = 'none', 1600);
+  });
+}
+
+function copiarReporte(id){
+  const l = LEADS.find(x => x.id === id);
+  if (!l || !l.reporte_medico) return;
+  navigator.clipboard.writeText(l.reporte_medico).then(() => {
+    const t = document.getElementById('toast');
+    t.textContent = 'Reporte copiado ✓';
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; t.textContent = 'Copiado ✓'; }, 1600);
   });
 }
 
