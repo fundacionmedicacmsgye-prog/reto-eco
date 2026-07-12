@@ -84,6 +84,7 @@
   .cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(111,227,212,.3)}
   .cta:focus-visible{outline:3px solid var(--doppler-warm);outline-offset:3px}
   .cta:active{transform:translateY(0)}
+  .cta:disabled{opacity:.55;cursor:default;transform:none}
   .cta-sub{text-align:center;font-size:13px;color:var(--gray-tissue);margin-top:12px}
 
   .trust{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -200,6 +201,65 @@
     font-size:24px;line-height:1.25;margin-bottom:12px;
   }
   .interstitial p{font-size:15px;line-height:1.6;color:var(--gray-tissue);max-width:40ch;margin:0 auto 28px}
+
+  /* ============ CALCULADORA ============ */
+  .calc-title{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(23px,6vw,28px);line-height:1.2;margin-bottom:8px;
+  }
+  .calc-sub{font-size:14.5px;color:var(--gray-tissue);line-height:1.55;margin-bottom:24px}
+  .calc-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+  .calc-card{
+    background:var(--card);border:1px solid var(--card-border);
+    border-radius:14px;padding:18px;
+  }
+  .calc-card .etiqueta{
+    font-size:11.5px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-tissue);margin-bottom:6px;
+  }
+  .calc-card .cifra{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:30px;color:var(--echo);letter-spacing:-.5px;
+  }
+  .calc-card .detalle{font-size:13px;color:var(--gray-tissue);margin-top:4px;line-height:1.5}
+  .calc-card.destacada{border-color:rgba(111,227,212,.4)}
+  .disclaimer{
+    font-size:12px;color:var(--gray-tissue);line-height:1.6;
+    border-left:2px solid var(--card-border);padding-left:12px;margin-bottom:24px;
+  }
+
+  /* ============ FORMULARIO ============ */
+  .form-grupo{margin-bottom:16px}
+  .form-grupo label{
+    display:block;font-size:13px;font-weight:600;
+    color:var(--gray-tissue);margin-bottom:7px;
+  }
+  .form-grupo input, .form-grupo select{
+    width:100%;padding:15px 14px;border-radius:12px;
+    border:1.5px solid var(--card-border);background:var(--card);
+    color:var(--bone);font-family:'Inter',sans-serif;font-size:16px;
+    appearance:none;
+  }
+  .form-grupo input:focus, .form-grupo select:focus{
+    outline:none;border-color:var(--echo);
+  }
+  .form-grupo select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2393A5B3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 14px center;
+  }
+  .consent{
+    display:flex;align-items:flex-start;gap:10px;
+    font-size:12.5px;color:var(--gray-tissue);line-height:1.55;
+    margin:6px 0 20px;
+  }
+  .consent input{
+    width:19px;height:19px;flex:none;margin-top:1px;
+    accent-color:var(--echo);
+  }
+  .form-error{
+    display:none;font-size:13px;color:var(--coral);
+    margin:-8px 0 14px;line-height:1.4;
+  }
 </style>
 </head>
 <body>
@@ -279,7 +339,7 @@
   <div id="quizContenido"></div>
 </main>
 
-<!-- ============ INTERLUDIO 1: hacia el conocimiento ============ -->
+<!-- ============ INTERLUDIO 1 ============ -->
 <main class="shell hidden" id="pantallaInterludio">
   <div class="interstitial fade-in">
     <div class="icon-ring">
@@ -291,7 +351,7 @@
   </div>
 </main>
 
-<!-- ============ INTERLUDIO 2: hacia el potencial ============ -->
+<!-- ============ INTERLUDIO 2 ============ -->
 <main class="shell hidden" id="pantallaInterludio2">
   <div class="interstitial fade-in">
     <div class="icon-ring">
@@ -303,13 +363,84 @@
   </div>
 </main>
 
-<!-- ============ CIERRE TEMPORAL (fin Fase 5) ============ -->
+<!-- ============ CALCULADORA DE POTENCIAL ============ -->
+<main class="shell hidden" id="pantallaCalculadora">
+  <span class="eyebrow">Tu potencial estimado</span>
+  <h2 class="calc-title" id="calcTitulo">Esto podría representar la ecografía en tu práctica</h2>
+  <p class="calc-sub" id="calcIntro"></p>
+
+  <div class="calc-grid">
+    <div class="calc-card destacada">
+      <div class="etiqueta">Facturación potencial mensual</div>
+      <div class="cifra" id="calcMensual">$0</div>
+      <div class="detalle" id="calcMensualDetalle"></div>
+    </div>
+    <div class="calc-card">
+      <div class="etiqueta">Proyección anual</div>
+      <div class="cifra" id="calcAnual">$0</div>
+      <div class="detalle">Manteniendo el mismo ritmo durante 12 meses.</div>
+    </div>
+    <div class="calc-card">
+      <div class="etiqueta">Retorno de una formación estructurada</div>
+      <div class="cifra" id="calcRetorno">—</div>
+      <div class="detalle" id="calcRetornoDetalle"></div>
+    </div>
+  </div>
+
+  <p class="disclaimer">Este cálculo es una simulación orientativa basada en tus propias respuestas. Los resultados reales dependen de la experiencia, la demanda local, la normativa, los costos de equipo e insumos y la forma de ejercicio profesional. No constituye una promesa de ingresos.</p>
+
+  <button class="cta" id="btnVerResultado">Ver mi resultado personalizado</button>
+</main>
+
+<!-- ============ CAPTURA DE DATOS ============ -->
+<main class="shell hidden" id="pantallaDatos">
+  <span class="eyebrow">Tu reporte está listo</span>
+  <h2 class="calc-title">Guarda tu resultado</h2>
+  <p class="calc-sub">Ingresa tus datos para guardar tu evaluación y recibir tu reporte personalizado con recomendaciones para tu perfil.</p>
+
+  <div class="form-grupo">
+    <label for="inpNombre">Nombre completo</label>
+    <input type="text" id="inpNombre" autocomplete="name" placeholder="Dr./Dra. Nombre Apellido">
+  </div>
+  <div class="form-grupo">
+    <label for="selPais">País</label>
+    <select id="selPais">
+      <option value="">Selecciona tu país</option>
+      <option value="Ecuador" data-prefijo="+593">Ecuador</option>
+      <option value="México" data-prefijo="+52">México</option>
+      <option value="El Salvador" data-prefijo="+503">El Salvador</option>
+      <option value="Honduras" data-prefijo="+504">Honduras</option>
+      <option value="Costa Rica" data-prefijo="+506">Costa Rica</option>
+      <option value="Guatemala" data-prefijo="+502">Guatemala</option>
+      <option value="Colombia" data-prefijo="+57">Colombia</option>
+      <option value="Perú" data-prefijo="+51">Perú</option>
+      <option value="Bolivia" data-prefijo="+591">Bolivia</option>
+      <option value="Estados Unidos" data-prefijo="+1">Estados Unidos</option>
+      <option value="Otro" data-prefijo="">Otro</option>
+    </select>
+  </div>
+  <div class="form-grupo">
+    <label for="inpWhatsapp">WhatsApp</label>
+    <input type="tel" id="inpWhatsapp" autocomplete="tel" inputmode="tel" placeholder="Primero selecciona tu país">
+  </div>
+
+  <label class="consent">
+    <input type="checkbox" id="chkConsent">
+    <span>Autorizo el envío de mi resultado y comunicaciones relacionadas con formación médica de FMC. Puedo solicitar la eliminación de mis datos en cualquier momento.</span>
+  </label>
+
+  <p class="form-error" id="formError"></p>
+
+  <button class="cta" id="btnGuardar">Guardar y ver mi resultado</button>
+</main>
+
+<!-- ============ CIERRE TEMPORAL (fin Fase 6) ============ -->
 <main class="shell hidden" id="pantallaCierre">
   <div class="interstitial fade-in">
     <div class="icon-ring">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
     </div>
-    <h2 id="cierreTitulo">Evaluación completada</h2>
+    <h2 id="cierreTitulo">¡Datos guardados!</h2>
     <p id="cierreTexto"></p>
     <button class="cta" onclick="location.reload()">Volver al inicio</button>
   </div>
@@ -321,6 +452,10 @@
 </footer>
 
 <script>
+/* ================= CONFIGURACIÓN SUPABASE ================= */
+const SUPABASE_URL = 'https://tsuasspfzvxeetuodobx.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_jHlwGifWfB8uHPof9nJQ9A_5daMRUYM';
+
 /* ================= ESTADO GLOBAL ================= */
 const respuestas = {};
 const detalleConocimiento = [];
@@ -566,16 +701,18 @@ const FIN_BLOQUE2 = bloque1.length + bloque2.length - 1;
 let indiceActual = 0;
 let respondida = false;
 
-const $inicio     = document.getElementById('pantallaInicio');
-const $quiz       = document.getElementById('pantallaQuiz');
-const $interludio = document.getElementById('pantallaInterludio');
-const $interludio2= document.getElementById('pantallaInterludio2');
-const $cierre     = document.getElementById('pantallaCierre');
-const $contenido  = document.getElementById('quizContenido');
-const $fill       = document.getElementById('progressFill');
-const $label      = document.getElementById('progressLabel');
-const $atras      = document.getElementById('btnAtras');
-const $pie        = document.getElementById('piePagina');
+const $inicio      = document.getElementById('pantallaInicio');
+const $quiz        = document.getElementById('pantallaQuiz');
+const $interludio  = document.getElementById('pantallaInterludio');
+const $interludio2 = document.getElementById('pantallaInterludio2');
+const $calculadora = document.getElementById('pantallaCalculadora');
+const $datos       = document.getElementById('pantallaDatos');
+const $cierre      = document.getElementById('pantallaCierre');
+const $contenido   = document.getElementById('quizContenido');
+const $fill        = document.getElementById('progressFill');
+const $label       = document.getElementById('progressLabel');
+const $atras       = document.getElementById('btnAtras');
+const $pie         = document.getElementById('piePagina');
 
 document.getElementById('btnIniciar').addEventListener('click', () => {
   mostrar($quiz);
@@ -590,6 +727,27 @@ document.getElementById('btnEmpezarPotencial').addEventListener('click', () => {
   mostrar($quiz);
   renderPregunta();
 });
+document.getElementById('btnVerResultado').addEventListener('click', () => {
+  mostrar($datos);
+});
+document.getElementById('btnGuardar').addEventListener('click', guardarProspecto);
+
+/* Prefijo automático de WhatsApp según el país seleccionado */
+document.getElementById('selPais').addEventListener('change', function(){
+  const opcion = this.options[this.selectedIndex];
+  const prefijo = opcion.dataset.prefijo || '';
+  const $wa = document.getElementById('inpWhatsapp');
+  const actual = $wa.value.trim();
+
+  // si está vacío o solo contiene un prefijo anterior, colocar el nuevo
+  if (actual === '' || /^\+\d{1,4}\s?$/.test(actual)) {
+    $wa.value = prefijo ? prefijo + ' ' : '';
+  } else if (prefijo && !actual.startsWith('+')) {
+    // el usuario ya escribió su número local sin prefijo: anteponerlo
+    $wa.value = prefijo + ' ' + actual;
+  }
+  $wa.placeholder = prefijo ? prefijo + ' 99 999 9999' : 'Incluye tu código de país';
+});
 
 $atras.addEventListener('click', () => {
   if (indiceActual === 0) {
@@ -603,7 +761,7 @@ $atras.addEventListener('click', () => {
 });
 
 function mostrar(pantalla){
-  [$inicio,$quiz,$interludio,$interludio2,$cierre].forEach(s => s.classList.add('hidden'));
+  [$inicio,$quiz,$interludio,$interludio2,$calculadora,$datos,$cierre].forEach(s => s.classList.add('hidden'));
   pantalla.classList.remove('hidden');
   $pie.classList.toggle('hidden', pantalla === $quiz);
   window.scrollTo(0,0);
@@ -684,7 +842,6 @@ function avanzar(){
     return;
   }
   if (indiceActual === FIN_BLOQUE2) {
-    // cerrar el puntaje de conocimiento
     respuestas.puntaje_conocimiento = Math.round((correctas / bloque2.length) * 100);
     respuestas.respuestas_detalle = detalleConocimiento;
     indiceActual++;
@@ -696,15 +853,150 @@ function avanzar(){
     indiceActual++;
     renderPregunta();
   } else {
-    // fin de toda la evaluación (temporal — Fase 6: calculadora + datos)
-    console.log('Estado completo:', respuestas);
-    document.getElementById('cierreTitulo').textContent =
-      'Evaluación completada · Conocimiento: ' + respuestas.puntaje_conocimiento + '%';
-    document.getElementById('cierreTexto').textContent =
-      'Acertaste ' + correctas + ' de ' + bloque2.length + ' preguntas académicas. ' +
-      'La siguiente etapa —el cálculo de tu potencial y tu resultado personalizado— estará disponible muy pronto.';
-    mostrar($cierre);
+    prepararCalculadora();
+    mostrar($calculadora);
   }
+}
+
+/* ================= CALCULADORA ================= */
+const MAPA_ESTUDIOS = { '1_5':3, '6_10':8, '11_20':15, '21_40':30, 'mas_40':45 };
+const MAPA_VALOR    = { 'menos_15':12, '15_25':20, '26_40':33, '41_60':50, 'mas_60':70, 'no_sabe':25 };
+const VALOR_DIPLOMADO = 608;
+
+function prepararCalculadora(){
+  const estudios = MAPA_ESTUDIOS[respuestas.estudios_potenciales_mes] || 10;
+  const valor    = MAPA_VALOR[respuestas.valor_promedio_eco] || 25;
+  const usaReferencial = respuestas.valor_promedio_eco === 'no_sabe';
+
+  const mensual = estudios * valor;
+  const anual   = mensual * 12;
+  const retorno = Math.ceil(VALOR_DIPLOMADO / valor);
+
+  respuestas.potencial_mensual = mensual;
+
+  document.getElementById('calcIntro').textContent =
+    'Según tus respuestas, estimaste una capacidad de ' + estudios + ' estudios mensuales' +
+    (usaReferencial
+      ? ', con un valor referencial de $' + valor + ' por estudio (indicaste no conocer el precio en tu zona).'
+      : ', con un valor promedio de $' + valor + ' por estudio en tu zona.');
+
+  document.getElementById('calcMensual').textContent = '$' + mensual.toLocaleString('en-US');
+  document.getElementById('calcMensualDetalle').textContent =
+    estudios + ' estudios × $' + valor + ' por estudio, en ingresos brutos.';
+
+  document.getElementById('calcAnual').textContent = '$' + anual.toLocaleString('en-US');
+
+  document.getElementById('calcRetorno').textContent = '≈ ' + retorno + ' estudios';
+  document.getElementById('calcRetornoDetalle').textContent =
+    'Una formación de $' + VALOR_DIPLOMADO + ' equivaldría aproximadamente a ' + retorno +
+    ' estudios ecográficos, sin considerar costos operativos, impuestos, equipo o comisiones.';
+}
+
+/* ================= LEAD SCORING Y AVATAR ================= */
+function calcularScore(){
+  let score = 0;
+  if (['101_200','201_400','mas_400'].includes(respuestas.pacientes_mes)) score += 3;
+  if (['nuevo_servicio','emprender'].includes(respuestas.objetivo_principal)) score += 3;
+  if (['busca_empleo','mejor_puesto'].includes(respuestas.etapa_profesional)) score += 3;
+  if (respuestas.valor_promedio_eco && respuestas.valor_promedio_eco !== 'no_sabe') score += 2;
+  if (respuestas.objecion_principal === 'costo') score += 2;
+  if (respuestas.objecion_principal === 'inseguridad') score += 1;
+  if (respuestas.objecion_principal === 'falta_tiempo') score -= 2;
+  if (respuestas.ha_visto_ofertas_eco === 'si_varias') score += 1;
+  return score;
+}
+
+function calcularAvatar(){
+  if (['nuevo_servicio','emprender'].includes(respuestas.objetivo_principal)) return 'emprendedor';
+  if (['busca_empleo','mejor_puesto','postgrado_rural'].includes(respuestas.etapa_profesional) ||
+      ['perfil_laboral','centro_medico'].includes(respuestas.objetivo_principal)) return 'empleable';
+  return 'clinico';
+}
+
+function calcularNivel(){
+  const p = respuestas.puntaje_conocimiento;
+  if (p <= 33) return 'explorador';
+  if (p <= 50) return 'en_desarrollo';
+  if (p <= 83) return 'clinico_progreso';
+  return 'avanzado';
+}
+
+/* ================= GUARDADO EN SUPABASE ================= */
+async function guardarProspecto(){
+  const nombre   = document.getElementById('inpNombre').value.trim();
+  const whatsapp = document.getElementById('inpWhatsapp').value.trim();
+  const pais     = document.getElementById('selPais').value;
+  const consent  = document.getElementById('chkConsent').checked;
+  const $error   = document.getElementById('formError');
+  const $btn     = document.getElementById('btnGuardar');
+
+  // validaciones
+  if (nombre.length < 3) return mostrarError('Ingresa tu nombre completo.');
+  const digitos = whatsapp.replace(/\D/g, '');
+  if (digitos.length < 8) return mostrarError('Ingresa un número de WhatsApp válido con código de país.');
+  if (!pais) return mostrarError('Selecciona tu país.');
+  if (!consent) return mostrarError('Debes autorizar el envío de tu resultado para continuar.');
+
+  $error.style.display = 'none';
+  $btn.disabled = true;
+  $btn.textContent = 'Guardando...';
+
+  const lead_score = calcularScore();
+  const registro = {
+    nombre: nombre,
+    whatsapp: whatsapp,
+    pais: pais,
+    perfil_profesional: respuestas.perfil_profesional,
+    pacientes_mes: respuestas.pacientes_mes,
+    realiza_ecografias: respuestas.realiza_ecografias,
+    etapa_profesional: respuestas.etapa_profesional,
+    ha_visto_ofertas_eco: respuestas.ha_visto_ofertas_eco,
+    percepcion_ventaja: respuestas.percepcion_ventaja,
+    puntaje_conocimiento: respuestas.puntaje_conocimiento,
+    respuestas_detalle: respuestas.respuestas_detalle,
+    estudios_potenciales_mes: respuestas.estudios_potenciales_mes,
+    valor_promedio_eco: respuestas.valor_promedio_eco,
+    objetivo_principal: respuestas.objetivo_principal,
+    objecion_principal: respuestas.objecion_principal,
+    potencial_mensual: respuestas.potencial_mensual,
+    nivel_resultado: calcularNivel(),
+    avatar: calcularAvatar(),
+    lead_score: lead_score,
+    categoria_lead: lead_score >= 8 ? 'A' : (lead_score >= 4 ? 'B' : 'C'),
+    completo_reto: true,
+    fuente: new URLSearchParams(location.search).get('f') || 'organico'
+  };
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/prospectos_eco', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(registro)
+    });
+    if (!res.ok) console.error('Error Supabase:', res.status, await res.text());
+  } catch (err) {
+    console.error('Error de red al guardar:', err);
+  }
+
+  // pase lo que pase, el médico ve su resultado (no lo castigamos por un error nuestro)
+  document.getElementById('cierreTitulo').textContent = '¡Gracias, ' + nombre.split(' ')[0] + '!';
+  document.getElementById('cierreTexto').textContent =
+    'Tu evaluación quedó registrada. Conocimiento: ' + respuestas.puntaje_conocimiento +
+    '% · Potencial estimado: $' + (respuestas.potencial_mensual || 0).toLocaleString('en-US') +
+    ' mensuales. Tu reporte personalizado completo estará disponible muy pronto.';
+  mostrar($cierre);
+}
+
+function mostrarError(msg){
+  const $error = document.getElementById('formError');
+  $error.textContent = msg;
+  $error.style.display = 'block';
+  return false;
 }
 </script>
 
