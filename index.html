@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reto ECO | FMC – Formación Médica Continua</title>
+<meta name="description" content="Descubre tu nivel actual en ecografía clínica, las áreas que debes fortalecer y el potencial de esta habilidad en tu práctica médica. Evaluación gratuita de 5 minutos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scan-deep:#0B1520;      /* fondo campo de escaneo */
+    --scan-mid:#122334;
+    --echo:#6FE3D4;           /* eco cian (doppler frío) */
+    --echo-dim:#2C7A70;
+    --doppler-warm:#FFB65C;   /* acento cálido doppler */
+    --bone:#F2F5F7;           /* texto principal */
+    --gray-tissue:#93A5B3;    /* texto secundario */
+    --card:#0F1E2D;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--scan-deep);
+    color:var(--bone);
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---- Sector de ultrasonido (firma visual) ---- */
+  .sector-wrap{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:0;
+  }
+  .sector{
+    position:absolute;
+    top:-32vh;
+    left:50%;
+    transform:translateX(-50%);
+    width:150vw;
+    max-width:900px;
+    aspect-ratio:1/1;
+  }
+  .sector svg{width:100%;height:100%;display:block}
+  .sweep{
+    transform-origin:50% 8%;
+    animation:sweep 7s ease-in-out infinite alternate;
+  }
+  @keyframes sweep{
+    from{transform:rotate(-24deg)}
+    to{transform:rotate(24deg)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .sweep{animation:none}
+  }
+
+  /* ---- Contenido ---- */
+  .shell{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:520px;
+    margin:0 auto;
+    padding:32px 22px 28px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:8vh;
+  }
+  .brand-mark{
+    width:34px;height:34px;
+    border-radius:9px;
+    background:linear-gradient(145deg,var(--echo) 0%,var(--echo-dim) 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Manrope',sans-serif;font-weight:800;font-size:15px;
+    color:var(--scan-deep);
+    letter-spacing:-.5px;
+  }
+  .brand-name{
+    font-family:'Manrope',sans-serif;
+    font-weight:700;font-size:13px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--gray-tissue);
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--echo);
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px;height:1px;
+    background:var(--echo);
+    opacity:.7;
+  }
+
+  h1{
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:clamp(28px,7.4vw,38px);
+    line-height:1.14;
+    letter-spacing:-.5px;
+    margin-bottom:16px;
+  }
+  h1 em{
+    font-style:normal;
+    color:var(--echo);
+  }
+  .lead{
+    font-size:16px;
+    line-height:1.6;
+    color:var(--gray-tissue);
+    margin-bottom:30px;
+    max-width:44ch;
+  }
+
+  .cta{
+    display:block;
+    width:100%;
+    padding:17px 20px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
+    color:#062019;
+    font-family:'Manrope',sans-serif;
+    font-weight:800;
+    font-size:17px;
+    letter-spacing:.01em;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 8px 28px rgba(111,227,212,.22);
+  }
+  .cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(111,227,212,.3)}
+  .cta:focus-visible{outline:3px solid var(--doppler-warm);outline-offset:3px}
+  .cta:active{transform:translateY(0)}
+  .cta-sub{
+    text-align:center;
+    font-size:13px;
+    color:var(--gray-tissue);
+    margin-top:12px;
+  }
+
+  .trust{
+    margin-top:34px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .chip{
+    background:var(--card);
+    border:1px solid rgba(147,165,179,.16);
+    border-radius:12px;
+    padding:13px 14px;
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+  }
+  .chip svg{flex:none;margin-top:1px}
+  .chip span{
+    font-size:12.5px;
+    line-height:1.4;
+    color:var(--bone);
+    font-weight:500;
+  }
+
+  footer{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    padding:18px 22px 26px;
+    font-size:11.5px;
+    color:var(--gray-tissue);
+    line-height:1.6;
+  }
+
+  @media (min-width:640px){
+    .shell{padding-top:52px}
+    .trust{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- Firma visual: sector de ultrasonido con barrido -->
+<div class="sector-wrap" aria-hidden="true">
+  <div class="sector">
+    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fan" cx="50%" cy="8%" r="92%">
+          <stop offset="0%" stop-color="#1B3448" stop-opacity=".9"/>
+          <stop offset="55%" stop-color="#122334" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#0B1520" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6FE3D4" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#6FE3D4" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <!-- abanico del transductor -->
+      <path d="M200 32 L38 360 A 210 210 0 0 0 362 360 Z" fill="url(#fan)"/>
+      <!-- arcos de profundidad -->
+      <g stroke="#2A445C" stroke-width="1" fill="none" opacity=".5">
+        <path d="M117 200 A 118 118 0 0 1 283 200"/>
+        <path d="M85 264 A 165 165 0 0 1 315 264"/>
+        <path d="M55 330 A 213 213 0 0 1 345 330"/>
+      </g>
+      <!-- línea de barrido animada -->
+      <g class="sweep">
+        <path d="M200 32 L200 372" stroke="url(#beam)" stroke-width="2.5"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<main class="shell">
+  <div class="brand">
+    <div class="brand-mark">F</div>
+    <div class="brand-name">FMC · Formación Médica Continua</div>
+  </div>
+
+  <span class="eyebrow">Reto ECO</span>
+
+  <h1>¿Qué tan preparado estás para integrar la <em>ecografía</em> en tu práctica médica?</h1>
+
+  <p class="lead">Responde 12 preguntas y descubre tu nivel actual, las áreas que debes fortalecer y el potencial que podría tener esta habilidad en tu consulta.</p>
+
+  <button class="cta" id="btnIniciar">Iniciar evaluación gratuita</button>
+  <p class="cta-sub">Sin costo · Resultado inmediato al finalizar</p>
+
+  <div class="trust">
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span>Duración: 5 minutos</span>
+    </div>
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      <span>Resultado inmediato y personalizado</span>
+    </div>
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/></svg>
+      <span>Evaluación orientativa, no certificante</span>
+    </div>
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <span>Dirigida a médicos y profesionales de la salud</span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  FMC – Formación Médica Continua · Diplomado de Ecografía Clínica<br>
+  Esta evaluación es orientativa y no constituye una certificación académica.
+</footer>
+
+<script>
+  document.getElementById('btnIniciar').addEventListener('click', function(){
+    // FASE 3: aquí se iniciará el flujo de preguntas
+    alert('El Reto ECO estará disponible muy pronto. ¡Estamos en construcción!');
+  });
+</script>
+
+</body>
+</html>
