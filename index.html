@@ -1072,19 +1072,30 @@ async function guardarProspecto(){
   };
 
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/prospectos_eco', {
+    // 1) Intento principal: función del servidor (guarda + genera mensaje de apertura con IA)
+    const res = await fetch('/.netlify/functions/guardar-prospecto', {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registro)
     });
-    if (!res.ok) console.error('Error Supabase:', res.status, await res.text());
+    if (!res.ok) throw new Error('Función respondió ' + res.status);
   } catch (err) {
-    console.error('Error de red al guardar:', err);
+    console.error('Función falló, usando respaldo directo:', err);
+    // 2) Respaldo: insertar directo a Supabase (sin mensaje de apertura) para no perder el lead
+    try {
+      await fetch(SUPABASE_URL + '/rest/v1/prospectos_eco', {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(registro)
+      });
+    } catch (err2) {
+      console.error('Respaldo también falló:', err2);
+    }
   }
 
   // pase lo que pase, el médico ve su resultado (no lo castigamos por un error nuestro)
