@@ -33,7 +33,6 @@
     flex-direction:column;
   }
 
-  /* ---- Sector de ultrasonido ---- */
   .sector-wrap{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
   .sector{position:absolute;top:-32vh;left:50%;transform:translateX(-50%);width:150vw;max-width:900px;aspect-ratio:1/1}
   .sector svg{width:100%;height:100%;display:block}
@@ -100,7 +99,6 @@
     padding:18px 22px 26px;font-size:11.5px;color:var(--gray-tissue);line-height:1.6;
   }
 
-  /* ================= QUIZ ================= */
   .hidden{display:none!important}
 
   .quiz-top{display:flex;align-items:center;gap:14px;margin-bottom:26px}
@@ -132,6 +130,10 @@
     font-family:'Manrope',sans-serif;font-weight:800;
     font-size:clamp(21px,5.6vw,26px);line-height:1.25;margin-bottom:24px;
   }
+  .q-nota{
+    font-size:13.5px;color:var(--gray-tissue);line-height:1.5;
+    margin:-14px 0 22px;
+  }
 
   .opts{display:flex;flex-direction:column;gap:11px}
   .opt{
@@ -161,7 +163,6 @@
   .opt.correcta:disabled:hover{border-color:var(--echo)}
   .opt.incorrecta:disabled:hover{border-color:var(--coral)}
 
-  /* Tarjeta de explicación */
   .explicacion{
     margin-top:18px;border-radius:13px;padding:16px;
     border:1px solid var(--card-border);background:var(--scan-mid);
@@ -189,7 +190,6 @@
     to{opacity:1;transform:translateY(0)}
   }
 
-  /* Interludio entre bloques */
   .interstitial{text-align:center;padding-top:6vh}
   .interstitial .icon-ring{
     width:74px;height:74px;margin:0 auto 22px;border-radius:50%;
@@ -242,7 +242,7 @@
 
   <h1>¿Qué tan preparado estás para integrar la <em>ecografía</em> en tu práctica médica?</h1>
 
-  <p class="lead">Responde 12 preguntas y descubre tu nivel actual, las áreas que debes fortalecer y el potencial que podría tener esta habilidad en tu consulta.</p>
+  <p class="lead">Completa esta evaluación de 5 minutos y descubre tu nivel actual, las áreas que debes fortalecer y el potencial que podría tener esta habilidad en tu carrera.</p>
 
   <button class="cta" id="btnIniciar">Iniciar evaluación gratuita</button>
   <p class="cta-sub">Sin costo · Resultado inmediato al finalizar</p>
@@ -279,7 +279,7 @@
   <div id="quizContenido"></div>
 </main>
 
-<!-- ============ INTERLUDIO: entrando al bloque de conocimiento ============ -->
+<!-- ============ INTERLUDIO 1: hacia el conocimiento ============ -->
 <main class="shell hidden" id="pantallaInterludio">
   <div class="interstitial fade-in">
     <div class="icon-ring">
@@ -291,14 +291,26 @@
   </div>
 </main>
 
-<!-- ============ CIERRE TEMPORAL (fin Fase 4) ============ -->
+<!-- ============ INTERLUDIO 2: hacia el potencial ============ -->
+<main class="shell hidden" id="pantallaInterludio2">
+  <div class="interstitial fade-in">
+    <div class="icon-ring">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+    </div>
+    <h2>Última etapa: tu potencial profesional</h2>
+    <p>Unas pocas preguntas más para dimensionar lo que la ecografía podría representar en tu carrera y en tu consulta. No hay respuestas correctas ni incorrectas.</p>
+    <button class="cta" id="btnEmpezarPotencial">Continuar</button>
+  </div>
+</main>
+
+<!-- ============ CIERRE TEMPORAL (fin Fase 5) ============ -->
 <main class="shell hidden" id="pantallaCierre">
   <div class="interstitial fade-in">
     <div class="icon-ring">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
     </div>
-    <h2 id="cierreTitulo">Bloque de conocimiento completado</h2>
-    <p id="cierreTexto">La siguiente etapa —tu potencial profesional y el resultado personalizado— estará disponible muy pronto.</p>
+    <h2 id="cierreTitulo">Evaluación completada</h2>
+    <p id="cierreTexto"></p>
     <button class="cta" onclick="location.reload()">Volver al inicio</button>
   </div>
 </main>
@@ -311,9 +323,8 @@
 <script>
 /* ================= ESTADO GLOBAL ================= */
 const respuestas = {};
-const detalleConocimiento = [];   // respuesta por respuesta para el asesor
+const detalleConocimiento = [];
 let correctas = 0;
-const TOTAL_PREGUNTAS = 12;
 
 /* ================= BLOQUE 1: PERFIL PROFESIONAL ================= */
 const bloque1 = [
@@ -459,39 +470,132 @@ const bloque2 = [
   }
 ];
 
-/* ================= FLUJO ================= */
-const flujo = [...bloque1, ...bloque2];
-let indiceActual = 0;
-let respondida = false;   // controla el estado de las preguntas de conocimiento
+/* ================= BLOQUE 3: EMPLEABILIDAD ================= */
+const bloque3 = [
+  {
+    tipo: 'perfil',
+    id: 'ha_visto_ofertas_eco',
+    bloque: 'Tu potencial · Mercado laboral',
+    texto: '¿Has visto ofertas laborales que soliciten manejo de ecografía?',
+    nota: 'Hospitales, clínicas, seguridad social, ONG o centros médicos.',
+    opciones: [
+      { valor: 'si_varias',  texto: 'Sí, varias' },
+      { valor: 'si_alguna',  texto: 'Sí, alguna vez' },
+      { valor: 'no_fijado',  texto: 'No me he fijado' },
+      { valor: 'no_busca',   texto: 'No estoy buscando empleo actualmente' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'percepcion_ventaja',
+    bloque: 'Tu potencial · Mercado laboral',
+    texto: 'En tu percepción, ¿un médico que domina la ecografía tiene ventaja al aplicar a un puesto?',
+    opciones: [
+      { valor: 'decisiva',  texto: 'Sí, una ventaja decisiva' },
+      { valor: 'alguna',    texto: 'Sí, alguna ventaja' },
+      { valor: 'no_seguro', texto: 'No estoy seguro' }
+    ]
+  }
+];
 
-const $inicio    = document.getElementById('pantallaInicio');
-const $quiz      = document.getElementById('pantallaQuiz');
-const $interludio= document.getElementById('pantallaInterludio');
-const $cierre    = document.getElementById('pantallaCierre');
-const $contenido = document.getElementById('quizContenido');
-const $fill      = document.getElementById('progressFill');
-const $label     = document.getElementById('progressLabel');
-const $atras     = document.getElementById('btnAtras');
-const $pie       = document.getElementById('piePagina');
+/* ================= BLOQUE 4: ECONÓMICO ================= */
+const bloque4 = [
+  {
+    tipo: 'perfil',
+    id: 'estudios_potenciales_mes',
+    bloque: 'Tu potencial · Capacidad de servicio',
+    texto: 'Si pudieras incorporar evaluaciones ecográficas a tu práctica, ¿cuántos pacientes crees que podrías atender al mes?',
+    opciones: [
+      { valor: '1_5',    texto: 'Entre 1 y 5' },
+      { valor: '6_10',   texto: 'Entre 6 y 10' },
+      { valor: '11_20',  texto: 'Entre 11 y 20' },
+      { valor: '21_40',  texto: 'Entre 21 y 40' },
+      { valor: 'mas_40', texto: 'Más de 40' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'valor_promedio_eco',
+    bloque: 'Tu potencial · Contexto de mercado',
+    texto: '¿Cuál es el valor promedio de una ecografía en tu ciudad o país?',
+    opciones: [
+      { valor: 'menos_15', texto: 'Menos de $15' },
+      { valor: '15_25',    texto: 'Entre $15 y $25' },
+      { valor: '26_40',    texto: 'Entre $26 y $40' },
+      { valor: '41_60',    texto: 'Entre $41 y $60' },
+      { valor: 'mas_60',   texto: 'Más de $60' },
+      { valor: 'no_sabe',  texto: 'No lo sé' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'objetivo_principal',
+    bloque: 'Tu potencial · Objetivo',
+    texto: '¿Cuál sería tu principal objetivo al aprender ecografía?',
+    opciones: [
+      { valor: 'evaluar_pacientes', texto: 'Evaluar mejor a mis pacientes' },
+      { valor: 'complementar',      texto: 'Complementar mi consulta' },
+      { valor: 'centro_medico',     texto: 'Trabajar en un centro médico u hospital' },
+      { valor: 'nuevo_servicio',    texto: 'Incorporar un nuevo servicio' },
+      { valor: 'perfil_laboral',    texto: 'Mejorar mi perfil profesional y laboral' },
+      { valor: 'emprender',         texto: 'Emprender con un servicio de ecografía' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'objecion_principal',
+    bloque: 'Tu potencial · Punto de partida',
+    texto: '¿Qué te impide comenzar actualmente?',
+    opciones: [
+      { valor: 'falta_formacion', texto: 'Falta de formación estructurada' },
+      { valor: 'sin_equipo',      texto: 'No tengo ecógrafo' },
+      { valor: 'no_conoce',       texto: 'No conozco el proceso para empezar' },
+      { valor: 'falta_tiempo',    texto: 'Falta de tiempo' },
+      { valor: 'costo',           texto: 'El costo de la capacitación' },
+      { valor: 'inseguridad',     texto: 'No sé si podré aprender' }
+    ]
+  }
+];
+
+/* ================= FLUJO ================= */
+const flujo = [...bloque1, ...bloque2, ...bloque3, ...bloque4];
+const TOTAL_PREGUNTAS = flujo.length;
+const FIN_BLOQUE1 = bloque1.length - 1;
+const FIN_BLOQUE2 = bloque1.length + bloque2.length - 1;
+
+let indiceActual = 0;
+let respondida = false;
+
+const $inicio     = document.getElementById('pantallaInicio');
+const $quiz       = document.getElementById('pantallaQuiz');
+const $interludio = document.getElementById('pantallaInterludio');
+const $interludio2= document.getElementById('pantallaInterludio2');
+const $cierre     = document.getElementById('pantallaCierre');
+const $contenido  = document.getElementById('quizContenido');
+const $fill       = document.getElementById('progressFill');
+const $label      = document.getElementById('progressLabel');
+const $atras      = document.getElementById('btnAtras');
+const $pie        = document.getElementById('piePagina');
 
 document.getElementById('btnIniciar').addEventListener('click', () => {
   mostrar($quiz);
   indiceActual = 0;
   renderPregunta();
 });
-
 document.getElementById('btnEmpezarConocimiento').addEventListener('click', () => {
+  mostrar($quiz);
+  renderPregunta();
+});
+document.getElementById('btnEmpezarPotencial').addEventListener('click', () => {
   mostrar($quiz);
   renderPregunta();
 });
 
 $atras.addEventListener('click', () => {
-  const p = flujo[indiceActual];
-  // en preguntas de conocimiento ya respondidas no se permite volver (evita re-intentos)
   if (indiceActual === 0) {
     mostrar($inicio);
   } else if (flujo[indiceActual - 1].tipo === 'conocimiento') {
-    return; // no se puede regresar a una pregunta académica ya calificada
+    return;
   } else {
     indiceActual--;
     renderPregunta();
@@ -499,7 +603,7 @@ $atras.addEventListener('click', () => {
 });
 
 function mostrar(pantalla){
-  [$inicio,$quiz,$interludio,$cierre].forEach(s => s.classList.add('hidden'));
+  [$inicio,$quiz,$interludio,$interludio2,$cierre].forEach(s => s.classList.add('hidden'));
   pantalla.classList.remove('hidden');
   $pie.classList.toggle('hidden', pantalla === $quiz);
   window.scrollTo(0,0);
@@ -513,12 +617,12 @@ function renderPregunta(){
   $fill.style.width = Math.max(avance, 4) + '%';
   $label.textContent = 'Pregunta ' + (indiceActual + 1) + ' de ' + TOTAL_PREGUNTAS;
 
-  // botón atrás deshabilitado si la anterior es de conocimiento
   $atras.disabled = indiceActual > 0 && flujo[indiceActual - 1].tipo === 'conocimiento';
 
   let html = '<div class="fade-in">';
   html += '<div class="q-block">' + p.bloque + '</div>';
   html += '<div class="q-text">' + p.texto + '</div>';
+  if (p.nota) html += '<p class="q-nota">' + p.nota + '</p>';
   html += '<div class="opts" id="listaOpts">';
   p.opciones.forEach(op => {
     const sel = (p.tipo === 'perfil' && respuestas[p.id] === op.valor) ? ' selected' : '';
@@ -540,7 +644,6 @@ function manejarRespuesta(p, btn){
     return;
   }
 
-  /* ---- pregunta de conocimiento ---- */
   if (respondida) return;
   respondida = true;
 
@@ -554,14 +657,12 @@ function manejarRespuesta(p, btn){
     correcta: esCorrecta
   });
 
-  // pintar opciones
   document.querySelectorAll('#listaOpts .opt').forEach(o => {
     o.disabled = true;
     if (o.dataset.valor === p.correcta) o.classList.add('correcta');
     else if (o.dataset.valor === eleccion) o.classList.add('incorrecta');
   });
 
-  // mostrar explicación
   const zona = document.getElementById('zonaExplicacion');
   zona.innerHTML =
     '<div class="explicacion fade-in">' +
@@ -577,10 +678,17 @@ function manejarRespuesta(p, btn){
 }
 
 function avanzar(){
-  // ¿terminó el bloque 1? → interludio antes del conocimiento
-  if (indiceActual === bloque1.length - 1) {
+  if (indiceActual === FIN_BLOQUE1) {
     indiceActual++;
     mostrar($interludio);
+    return;
+  }
+  if (indiceActual === FIN_BLOQUE2) {
+    // cerrar el puntaje de conocimiento
+    respuestas.puntaje_conocimiento = Math.round((correctas / bloque2.length) * 100);
+    respuestas.respuestas_detalle = detalleConocimiento;
+    indiceActual++;
+    mostrar($interludio2);
     return;
   }
 
@@ -588,18 +696,13 @@ function avanzar(){
     indiceActual++;
     renderPregunta();
   } else {
-    // fin del bloque de conocimiento
-    const puntaje = Math.round((correctas / bloque2.length) * 100);
-    respuestas.puntaje_conocimiento = puntaje;
-    respuestas.respuestas_detalle = detalleConocimiento;
-
+    // fin de toda la evaluación (temporal — Fase 6: calculadora + datos)
     console.log('Estado completo:', respuestas);
-
     document.getElementById('cierreTitulo').textContent =
-      'Conocimiento evaluado: ' + puntaje + '%';
+      'Evaluación completada · Conocimiento: ' + respuestas.puntaje_conocimiento + '%';
     document.getElementById('cierreTexto').textContent =
-      'Acertaste ' + correctas + ' de ' + bloque2.length + ' preguntas. ' +
-      'La siguiente etapa —tu potencial profesional y el resultado personalizado— estará disponible muy pronto.';
+      'Acertaste ' + correctas + ' de ' + bloque2.length + ' preguntas académicas. ' +
+      'La siguiente etapa —el cálculo de tu potencial y tu resultado personalizado— estará disponible muy pronto.';
     mostrar($cierre);
   }
 }
