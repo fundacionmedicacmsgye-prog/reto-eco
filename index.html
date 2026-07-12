@@ -15,6 +15,7 @@
     --echo:#6FE3D4;
     --echo-dim:#2C7A70;
     --doppler-warm:#FFB65C;
+    --coral:#FF8A7A;
     --bone:#F2F5F7;
     --gray-tissue:#93A5B3;
     --card:#0F1E2D;
@@ -102,9 +103,7 @@
   /* ================= QUIZ ================= */
   .hidden{display:none!important}
 
-  .quiz-top{
-    display:flex;align-items:center;gap:14px;margin-bottom:26px;
-  }
+  .quiz-top{display:flex;align-items:center;gap:14px;margin-bottom:26px}
   .btn-back{
     background:var(--card);border:1px solid var(--card-border);
     color:var(--gray-tissue);width:38px;height:38px;border-radius:11px;
@@ -112,14 +111,13 @@
     display:flex;align-items:center;justify-content:center;
   }
   .btn-back:focus-visible{outline:2px solid var(--echo);outline-offset:2px}
+  .btn-back:disabled{opacity:.35;cursor:default}
   .progress-wrap{flex:1}
   .progress-label{
     font-size:11px;font-weight:600;letter-spacing:.12em;
     text-transform:uppercase;color:var(--gray-tissue);margin-bottom:6px;
   }
-  .progress-bar{
-    height:6px;background:var(--card);border-radius:99px;overflow:hidden;
-  }
+  .progress-bar{height:6px;background:var(--card);border-radius:99px;overflow:hidden}
   .progress-fill{
     height:100%;width:0%;
     background:linear-gradient(90deg,var(--echo-dim),var(--echo));
@@ -150,6 +148,40 @@
     background:linear-gradient(0deg,rgba(111,227,212,.08),rgba(111,227,212,.08)),var(--card);
     transform:scale(.995);
   }
+  .opt.correcta{
+    border-color:var(--echo);
+    background:linear-gradient(0deg,rgba(111,227,212,.12),rgba(111,227,212,.12)),var(--card);
+  }
+  .opt.incorrecta{
+    border-color:var(--coral);
+    background:linear-gradient(0deg,rgba(255,138,122,.1),rgba(255,138,122,.1)),var(--card);
+  }
+  .opt:disabled{cursor:default}
+  .opt:disabled:hover{border-color:var(--card-border)}
+  .opt.correcta:disabled:hover{border-color:var(--echo)}
+  .opt.incorrecta:disabled:hover{border-color:var(--coral)}
+
+  /* Tarjeta de explicación */
+  .explicacion{
+    margin-top:18px;border-radius:13px;padding:16px;
+    border:1px solid var(--card-border);background:var(--scan-mid);
+  }
+  .explicacion .tag{
+    display:inline-block;font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .explicacion .tag.ok{color:var(--echo)}
+  .explicacion .tag.no{color:var(--coral)}
+  .explicacion p{font-size:14.5px;line-height:1.55;color:var(--bone)}
+  .btn-continuar{
+    margin-top:16px;display:block;width:100%;padding:15px;
+    border:none;border-radius:13px;
+    background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
+    color:#062019;font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;
+    cursor:pointer;
+  }
+  .btn-continuar:focus-visible{outline:3px solid var(--doppler-warm);outline-offset:3px}
 
   .fade-in{animation:fadeUp .3s ease}
   @keyframes fadeUp{
@@ -157,7 +189,7 @@
     to{opacity:1;transform:translateY(0)}
   }
 
-  /* Pantalla de cierre de bloque */
+  /* Interludio entre bloques */
   .interstitial{text-align:center;padding-top:6vh}
   .interstitial .icon-ring{
     width:74px;height:74px;margin:0 auto 22px;border-radius:50%;
@@ -247,14 +279,26 @@
   <div id="quizContenido"></div>
 </main>
 
-<!-- ============ CIERRE DE BLOQUE 1 (temporal) ============ -->
+<!-- ============ INTERLUDIO: entrando al bloque de conocimiento ============ -->
+<main class="shell hidden" id="pantallaInterludio">
+  <div class="interstitial fade-in">
+    <div class="icon-ring">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+    <h2>Ahora, midamos tu conocimiento</h2>
+    <p>Vienen 6 preguntas sobre fundamentos de ecografía clínica. Después de cada respuesta verás una explicación breve. No busques la perfección: busca conocer tu punto de partida.</p>
+    <button class="cta" id="btnEmpezarConocimiento">Comenzar</button>
+  </div>
+</main>
+
+<!-- ============ CIERRE TEMPORAL (fin Fase 4) ============ -->
 <main class="shell hidden" id="pantallaCierre">
   <div class="interstitial fade-in">
     <div class="icon-ring">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
     </div>
-    <h2>Perfil registrado correctamente</h2>
-    <p>La siguiente etapa —el bloque de conocimiento en ecografía— estará disponible muy pronto. Estamos en construcción.</p>
+    <h2 id="cierreTitulo">Bloque de conocimiento completado</h2>
+    <p id="cierreTexto">La siguiente etapa —tu potencial profesional y el resultado personalizado— estará disponible muy pronto.</p>
     <button class="cta" onclick="location.reload()">Volver al inicio</button>
   </div>
 </main>
@@ -266,12 +310,15 @@
 
 <script>
 /* ================= ESTADO GLOBAL ================= */
-const respuestas = {};        // aquí se acumulan todas las respuestas
-const TOTAL_PREGUNTAS = 12;   // total del reto completo (para la barra)
+const respuestas = {};
+const detalleConocimiento = [];   // respuesta por respuesta para el asesor
+let correctas = 0;
+const TOTAL_PREGUNTAS = 12;
 
 /* ================= BLOQUE 1: PERFIL PROFESIONAL ================= */
 const bloque1 = [
   {
+    tipo: 'perfil',
     id: 'perfil_profesional',
     bloque: 'Perfil profesional',
     texto: '¿Cuál es tu perfil profesional?',
@@ -285,6 +332,7 @@ const bloque1 = [
     ]
   },
   {
+    tipo: 'perfil',
     id: 'pacientes_mes',
     bloque: 'Perfil profesional',
     texto: '¿Cuántos pacientes atiendes aproximadamente al mes?',
@@ -297,103 +345,262 @@ const bloque1 = [
     ]
   },
   {
+    tipo: 'perfil',
     id: 'realiza_ecografias',
     bloque: 'Perfil profesional',
     texto: '¿Actualmente realizas ecografías?',
     opciones: [
-      { valor: 'frecuente',      texto: 'Sí, con frecuencia' },
-      { valor: 'ocasional',      texto: 'Sí, ocasionalmente' },
-      { valor: 'interpreta',     texto: 'Solo observo o interpreto algunos casos' },
-      { valor: 'quiere_aprender',texto: 'No, pero quiero aprender' },
-      { valor: 'nunca',          texto: 'Nunca he tenido contacto con la ecografía' }
+      { valor: 'frecuente',       texto: 'Sí, con frecuencia' },
+      { valor: 'ocasional',       texto: 'Sí, ocasionalmente' },
+      { valor: 'interpreta',      texto: 'Solo observo o interpreto algunos casos' },
+      { valor: 'quiere_aprender', texto: 'No, pero quiero aprender' },
+      { valor: 'nunca',           texto: 'Nunca he tenido contacto con la ecografía' }
     ]
   },
   {
+    tipo: 'perfil',
     id: 'etapa_profesional',
     bloque: 'Perfil profesional',
     texto: '¿En qué etapa profesional te encuentras?',
     opciones: [
-      { valor: 'busca_empleo',   texto: 'Buscando un empleo estable' },
-      { valor: 'mejor_puesto',   texto: 'Empleado, pero quiero un mejor puesto' },
-      { valor: 'consulta_propia',texto: 'Tengo consulta propia y quiero potenciarla' },
-      { valor: 'postgrado_rural',texto: 'Preparando postgrado o año rural' }
+      { valor: 'busca_empleo',    texto: 'Buscando un empleo estable' },
+      { valor: 'mejor_puesto',    texto: 'Empleado, pero quiero un mejor puesto' },
+      { valor: 'consulta_propia', texto: 'Tengo consulta propia y quiero potenciarla' },
+      { valor: 'postgrado_rural', texto: 'Preparando postgrado o año rural' }
     ]
   }
 ];
 
-/* ================= MOTOR DEL QUIZ ================= */
-let indiceActual = 0;
-const flujo = bloque1;   // en las próximas fases se suman más bloques aquí
+/* ================= BLOQUE 2: CONOCIMIENTO ================= */
+const bloque2 = [
+  {
+    tipo: 'conocimiento',
+    id: 'c1',
+    bloque: 'Conocimiento · Anatomía ecográfica',
+    texto: '¿Qué estructura se utiliza habitualmente como referencia anatómica para identificar la vesícula biliar?',
+    opciones: [
+      { valor: 'a', texto: 'Vena porta' },
+      { valor: 'b', texto: 'Vena cava inferior' },
+      { valor: 'c', texto: 'Ligamento redondo' },
+      { valor: 'd', texto: 'Arteria mesentérica superior' }
+    ],
+    correcta: 'a',
+    explicacion: 'La vena porta y la fisura lobar principal suelen utilizarse como referencias anatómicas para localizar la vesícula biliar durante la exploración.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c2',
+    bloque: 'Conocimiento · Equipos y transductores',
+    texto: '¿Qué transductor se utiliza con mayor frecuencia para una ecografía abdominal en un adulto?',
+    opciones: [
+      { valor: 'a', texto: 'Lineal de alta frecuencia' },
+      { valor: 'b', texto: 'Convexo de baja frecuencia' },
+      { valor: 'c', texto: 'Endocavitario' },
+      { valor: 'd', texto: 'Sectorial exclusivamente' }
+    ],
+    correcta: 'b',
+    explicacion: 'El transductor convexo de baja frecuencia (2–5 MHz) ofrece la penetración necesaria para evaluar estructuras abdominales profundas en el adulto.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c3',
+    bloque: 'Conocimiento · Interpretación de imagen',
+    texto: 'En una exploración ecográfica, una estructura anecoica generalmente aparece:',
+    opciones: [
+      { valor: 'a', texto: 'Blanca' },
+      { valor: 'b', texto: 'Gris brillante' },
+      { valor: 'c', texto: 'Negra' },
+      { valor: 'd', texto: 'Con sombra posterior obligatoria' }
+    ],
+    correcta: 'c',
+    explicacion: 'Anecoico significa sin ecos: la estructura se observa negra, como ocurre con los líquidos simples (orina, bilis, quistes simples).'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c4',
+    bloque: 'Conocimiento · Técnica de exploración',
+    texto: '¿Cuál de estas situaciones puede dificultar una ecografía abdominal?',
+    opciones: [
+      { valor: 'a', texto: 'Ayuno adecuado' },
+      { valor: 'b', texto: 'Exceso de gas intestinal' },
+      { valor: 'c', texto: 'Uso de gel' },
+      { valor: 'd', texto: 'Posición en decúbito supino' }
+    ],
+    correcta: 'b',
+    explicacion: 'El gas intestinal refleja el haz ultrasónico e impide la visualización de estructuras profundas. Por eso el ayuno previo mejora la calidad del estudio.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c5',
+    bloque: 'Conocimiento · Ecografía clínica',
+    texto: 'En ecografía clínica, el término POCUS se refiere a:',
+    opciones: [
+      { valor: 'a', texto: 'Un estudio radiológico completo' },
+      { valor: 'b', texto: 'Ecografía realizada al lado del paciente para responder preguntas clínicas específicas' },
+      { valor: 'c', texto: 'Un procedimiento quirúrgico guiado' },
+      { valor: 'd', texto: 'Una técnica exclusiva de cardiología' }
+    ],
+    correcta: 'b',
+    explicacion: 'POCUS (Point-of-Care Ultrasound) es la ecografía en el punto de atención: dirigida, enfocada y realizada por el propio clínico para responder una pregunta concreta.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c6',
+    bloque: 'Conocimiento · Criterio clínico',
+    texto: '¿Qué hallazgo debe interpretarse siempre junto con el contexto clínico?',
+    opciones: [
+      { valor: 'a', texto: 'Todos los hallazgos ecográficos' },
+      { valor: 'b', texto: 'Solamente las imágenes abdominales' },
+      { valor: 'c', texto: 'Solamente las imágenes cardíacas' },
+      { valor: 'd', texto: 'Únicamente las imágenes con Doppler' }
+    ],
+    correcta: 'a',
+    explicacion: 'La ecografía complementa la evaluación clínica, nunca la reemplaza. Todo hallazgo debe integrarse con la historia y el examen físico del paciente.'
+  }
+];
 
-const $inicio   = document.getElementById('pantallaInicio');
-const $quiz     = document.getElementById('pantallaQuiz');
-const $cierre   = document.getElementById('pantallaCierre');
-const $contenido= document.getElementById('quizContenido');
-const $fill     = document.getElementById('progressFill');
-const $label    = document.getElementById('progressLabel');
-const $atras    = document.getElementById('btnAtras');
-const $pie      = document.getElementById('piePagina');
+/* ================= FLUJO ================= */
+const flujo = [...bloque1, ...bloque2];
+let indiceActual = 0;
+let respondida = false;   // controla el estado de las preguntas de conocimiento
+
+const $inicio    = document.getElementById('pantallaInicio');
+const $quiz      = document.getElementById('pantallaQuiz');
+const $interludio= document.getElementById('pantallaInterludio');
+const $cierre    = document.getElementById('pantallaCierre');
+const $contenido = document.getElementById('quizContenido');
+const $fill      = document.getElementById('progressFill');
+const $label     = document.getElementById('progressLabel');
+const $atras     = document.getElementById('btnAtras');
+const $pie       = document.getElementById('piePagina');
 
 document.getElementById('btnIniciar').addEventListener('click', () => {
-  $inicio.classList.add('hidden');
-  $pie.classList.add('hidden');
-  $quiz.classList.remove('hidden');
+  mostrar($quiz);
   indiceActual = 0;
   renderPregunta();
 });
 
+document.getElementById('btnEmpezarConocimiento').addEventListener('click', () => {
+  mostrar($quiz);
+  renderPregunta();
+});
+
 $atras.addEventListener('click', () => {
+  const p = flujo[indiceActual];
+  // en preguntas de conocimiento ya respondidas no se permite volver (evita re-intentos)
   if (indiceActual === 0) {
-    // volver a la pantalla inicial
-    $quiz.classList.add('hidden');
-    $inicio.classList.remove('hidden');
-    $pie.classList.remove('hidden');
+    mostrar($inicio);
+  } else if (flujo[indiceActual - 1].tipo === 'conocimiento') {
+    return; // no se puede regresar a una pregunta académica ya calificada
   } else {
     indiceActual--;
     renderPregunta();
   }
 });
 
+function mostrar(pantalla){
+  [$inicio,$quiz,$interludio,$cierre].forEach(s => s.classList.add('hidden'));
+  pantalla.classList.remove('hidden');
+  $pie.classList.toggle('hidden', pantalla === $quiz);
+  window.scrollTo(0,0);
+}
+
 function renderPregunta(){
   const p = flujo[indiceActual];
+  respondida = false;
 
-  // barra de progreso sobre el total del reto completo
   const avance = (indiceActual / TOTAL_PREGUNTAS) * 100;
   $fill.style.width = Math.max(avance, 4) + '%';
   $label.textContent = 'Pregunta ' + (indiceActual + 1) + ' de ' + TOTAL_PREGUNTAS;
 
+  // botón atrás deshabilitado si la anterior es de conocimiento
+  $atras.disabled = indiceActual > 0 && flujo[indiceActual - 1].tipo === 'conocimiento';
+
   let html = '<div class="fade-in">';
   html += '<div class="q-block">' + p.bloque + '</div>';
   html += '<div class="q-text">' + p.texto + '</div>';
-  html += '<div class="opts">';
+  html += '<div class="opts" id="listaOpts">';
   p.opciones.forEach(op => {
-    const sel = respuestas[p.id] === op.valor ? ' selected' : '';
+    const sel = (p.tipo === 'perfil' && respuestas[p.id] === op.valor) ? ' selected' : '';
     html += '<button class="opt' + sel + '" data-valor="' + op.valor + '">' + op.texto + '</button>';
   });
-  html += '</div></div>';
+  html += '</div><div id="zonaExplicacion"></div></div>';
   $contenido.innerHTML = html;
 
-  // listeners de opciones
   $contenido.querySelectorAll('.opt').forEach(btn => {
-    btn.addEventListener('click', () => {
-      respuestas[p.id] = btn.dataset.valor;
-      btn.classList.add('selected');
-      // pequeña pausa para que el usuario vea su selección
-      setTimeout(avanzar, 220);
-    });
+    btn.addEventListener('click', () => manejarRespuesta(p, btn));
   });
 }
 
+function manejarRespuesta(p, btn){
+  if (p.tipo === 'perfil') {
+    respuestas[p.id] = btn.dataset.valor;
+    btn.classList.add('selected');
+    setTimeout(avanzar, 220);
+    return;
+  }
+
+  /* ---- pregunta de conocimiento ---- */
+  if (respondida) return;
+  respondida = true;
+
+  const eleccion = btn.dataset.valor;
+  const esCorrecta = eleccion === p.correcta;
+  if (esCorrecta) correctas++;
+
+  detalleConocimiento.push({
+    pregunta: p.id,
+    respuesta: eleccion,
+    correcta: esCorrecta
+  });
+
+  // pintar opciones
+  document.querySelectorAll('#listaOpts .opt').forEach(o => {
+    o.disabled = true;
+    if (o.dataset.valor === p.correcta) o.classList.add('correcta');
+    else if (o.dataset.valor === eleccion) o.classList.add('incorrecta');
+  });
+
+  // mostrar explicación
+  const zona = document.getElementById('zonaExplicacion');
+  zona.innerHTML =
+    '<div class="explicacion fade-in">' +
+      '<span class="tag ' + (esCorrecta ? 'ok' : 'no') + '">' +
+        (esCorrecta ? '✓ Correcto' : '✗ Respuesta correcta: la resaltada') +
+      '</span>' +
+      '<p>' + p.explicacion + '</p>' +
+      '<button class="btn-continuar" id="btnContinuar">Continuar</button>' +
+    '</div>';
+
+  document.getElementById('btnContinuar').addEventListener('click', avanzar);
+  document.getElementById('btnContinuar').scrollIntoView({behavior:'smooth', block:'end'});
+}
+
 function avanzar(){
+  // ¿terminó el bloque 1? → interludio antes del conocimiento
+  if (indiceActual === bloque1.length - 1) {
+    indiceActual++;
+    mostrar($interludio);
+    return;
+  }
+
   if (indiceActual < flujo.length - 1) {
     indiceActual++;
     renderPregunta();
   } else {
-    // fin del Bloque 1 (temporal — en Fase 4 continúa el bloque de conocimiento)
-    console.log('Respuestas Bloque 1:', respuestas);
-    $quiz.classList.add('hidden');
-    $cierre.classList.remove('hidden');
-    $pie.classList.remove('hidden');
+    // fin del bloque de conocimiento
+    const puntaje = Math.round((correctas / bloque2.length) * 100);
+    respuestas.puntaje_conocimiento = puntaje;
+    respuestas.respuestas_detalle = detalleConocimiento;
+
+    console.log('Estado completo:', respuestas);
+
+    document.getElementById('cierreTitulo').textContent =
+      'Conocimiento evaluado: ' + puntaje + '%';
+    document.getElementById('cierreTexto').textContent =
+      'Acertaste ' + correctas + ' de ' + bloque2.length + ' preguntas. ' +
+      'La siguiente etapa —tu potencial profesional y el resultado personalizado— estará disponible muy pronto.';
+    mostrar($cierre);
   }
 }
 </script>
