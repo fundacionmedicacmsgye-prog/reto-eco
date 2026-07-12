@@ -202,6 +202,77 @@
   }
   .interstitial p{font-size:15px;line-height:1.6;color:var(--gray-tissue);max-width:40ch;margin:0 auto 28px}
 
+  /* ============ RESULTADO PERSONALIZADO ============ */
+  .res-nivel{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(26px,7vw,32px);line-height:1.15;
+    margin-bottom:6px;color:var(--echo);
+  }
+  .res-saludo{
+    font-size:14.5px;color:var(--gray-tissue);margin-bottom:22px;line-height:1.5;
+  }
+  .res-score-card{
+    background:var(--card);border:1px solid rgba(111,227,212,.35);
+    border-radius:16px;padding:20px;margin-bottom:14px;
+  }
+  .res-score-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .res-score-top .etiqueta{
+    font-size:11.5px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-tissue);
+  }
+  .res-score-top .num{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:34px;color:var(--bone);
+  }
+  .res-barra{height:9px;background:var(--scan-mid);border-radius:99px;overflow:hidden}
+  .res-barra-fill{
+    height:100%;width:0%;border-radius:99px;
+    background:linear-gradient(90deg,var(--echo-dim),var(--echo));
+    transition:width .8s ease;
+  }
+  .res-seccion{
+    background:var(--card);border:1px solid var(--card-border);
+    border-radius:16px;padding:18px;margin-bottom:14px;
+  }
+  .res-seccion h3{
+    font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;
+    letter-spacing:.08em;text-transform:uppercase;
+    color:var(--gray-tissue);margin-bottom:12px;
+  }
+  .res-lista{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .res-lista li{
+    display:flex;align-items:flex-start;gap:9px;
+    font-size:14.5px;line-height:1.45;color:var(--bone);
+  }
+  .res-lista .mark{flex:none;font-weight:800;font-family:'Manrope',sans-serif}
+  .res-lista .mark.ok{color:var(--echo)}
+  .res-lista .mark.mejora{color:var(--doppler-warm)}
+  .res-texto{font-size:14.5px;line-height:1.6;color:var(--bone)}
+  .res-potencial{
+    display:flex;align-items:baseline;gap:8px;margin-bottom:6px;
+  }
+  .res-potencial .cifra{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:28px;color:var(--echo);
+  }
+  .res-potencial .unidad{font-size:13px;color:var(--gray-tissue)}
+  .btn-whatsapp{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;padding:17px 20px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,#38D67A 0%,#25B864 100%);
+    color:#06200F;font-family:'Manrope',sans-serif;font-weight:800;font-size:16.5px;
+    cursor:pointer;text-decoration:none;
+    box-shadow:0 8px 28px rgba(56,214,122,.22);
+    transition:transform .15s ease;
+    margin-top:6px;
+  }
+  .btn-whatsapp:hover{transform:translateY(-2px)}
+  .btn-whatsapp svg{flex:none}
+  .res-nota{
+    text-align:center;font-size:12.5px;color:var(--gray-tissue);
+    margin-top:12px;line-height:1.5;
+  }
+
   /* ============ CALCULADORA ============ */
   .calc-title{
     font-family:'Manrope',sans-serif;font-weight:800;
@@ -434,16 +505,49 @@
   <button class="cta" id="btnGuardar">Guardar y ver mi resultado</button>
 </main>
 
-<!-- ============ CIERRE TEMPORAL (fin Fase 6) ============ -->
-<main class="shell hidden" id="pantallaCierre">
-  <div class="interstitial fade-in">
-    <div class="icon-ring">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+<!-- ============ RESULTADO PERSONALIZADO ============ -->
+<main class="shell hidden" id="pantallaResultado">
+  <span class="eyebrow">Tu resultado · Reto ECO</span>
+  <div class="res-nivel" id="resNivel">Nivel</div>
+  <p class="res-saludo" id="resSaludo"></p>
+
+  <div class="res-score-card">
+    <div class="res-score-top">
+      <span class="etiqueta">Conocimiento en ecografía</span>
+      <span class="num" id="resPuntaje">0%</span>
     </div>
-    <h2 id="cierreTitulo">¡Datos guardados!</h2>
-    <p id="cierreTexto"></p>
-    <button class="cta" onclick="location.reload()">Volver al inicio</button>
+    <div class="res-barra"><div class="res-barra-fill" id="resBarra"></div></div>
   </div>
+
+  <div class="res-seccion" id="resFortalezasSec">
+    <h3>Fortalezas</h3>
+    <ul class="res-lista" id="resFortalezas"></ul>
+  </div>
+
+  <div class="res-seccion" id="resMejorasSec">
+    <h3>Áreas a fortalecer</h3>
+    <ul class="res-lista" id="resMejoras"></ul>
+  </div>
+
+  <div class="res-seccion">
+    <h3>Tu potencial estimado</h3>
+    <div class="res-potencial">
+      <span class="cifra" id="resPotencial">$0</span>
+      <span class="unidad">mensuales brutos (simulación orientativa)</span>
+    </div>
+    <p class="res-texto" id="resPotencialDetalle"></p>
+  </div>
+
+  <div class="res-seccion">
+    <h3>Recomendación para tu perfil</h3>
+    <p class="res-texto" id="resRecomendacion"></p>
+  </div>
+
+  <a class="btn-whatsapp" id="btnWhatsapp" target="_blank" rel="noopener">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.7.25-1.29.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.79h-.01a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.72.97.99-3.62-.23-.37a9.8 9.8 0 0 1-1.5-5.22c0-5.42 4.42-9.83 9.84-9.83 2.63 0 5.1 1.02 6.95 2.88a9.77 9.77 0 0 1 2.88 6.96c0 5.42-4.42 9.83-9.84 9.83zm8.37-18.2A11.72 11.72 0 0 0 12.05 .13C5.53.13.22 5.43.22 11.95c0 2.08.54 4.12 1.58 5.92L.13 24l6.28-1.65a11.85 11.85 0 0 0 5.63 1.43h.01c6.52 0 11.83-5.3 11.83-11.83 0-3.16-1.23-6.13-3.46-8.36z"/></svg>
+    Recibir mi reporte completo por WhatsApp
+  </a>
+  <p class="res-nota">Un asesor académico de FMC te enviará tu reporte y una guía de inicio, sin compromiso.</p>
 </main>
 
 <footer id="piePagina">
@@ -707,7 +811,7 @@ const $interludio  = document.getElementById('pantallaInterludio');
 const $interludio2 = document.getElementById('pantallaInterludio2');
 const $calculadora = document.getElementById('pantallaCalculadora');
 const $datos       = document.getElementById('pantallaDatos');
-const $cierre      = document.getElementById('pantallaCierre');
+const $resultado   = document.getElementById('pantallaResultado');
 const $contenido   = document.getElementById('quizContenido');
 const $fill        = document.getElementById('progressFill');
 const $label       = document.getElementById('progressLabel');
@@ -761,7 +865,7 @@ $atras.addEventListener('click', () => {
 });
 
 function mostrar(pantalla){
-  [$inicio,$quiz,$interludio,$interludio2,$calculadora,$datos,$cierre].forEach(s => s.classList.add('hidden'));
+  [$inicio,$quiz,$interludio,$interludio2,$calculadora,$datos,$resultado].forEach(s => s.classList.add('hidden'));
   pantalla.classList.remove('hidden');
   $pie.classList.toggle('hidden', pantalla === $quiz);
   window.scrollTo(0,0);
@@ -984,12 +1088,100 @@ async function guardarProspecto(){
   }
 
   // pase lo que pase, el médico ve su resultado (no lo castigamos por un error nuestro)
-  document.getElementById('cierreTitulo').textContent = '¡Gracias, ' + nombre.split(' ')[0] + '!';
-  document.getElementById('cierreTexto').textContent =
-    'Tu evaluación quedó registrada. Conocimiento: ' + respuestas.puntaje_conocimiento +
-    '% · Potencial estimado: $' + (respuestas.potencial_mensual || 0).toLocaleString('en-US') +
-    ' mensuales. Tu reporte personalizado completo estará disponible muy pronto.';
-  mostrar($cierre);
+  renderResultado(nombre);
+}
+
+/* ================= RESULTADO PERSONALIZADO ================= */
+const WHATSAPP_FMC = '593984457607'; // WhatsApp de Mario Plaza - FMC
+
+const CATEGORIAS = {
+  c1: 'Anatomía ecográfica',
+  c2: 'Equipos y transductores',
+  c3: 'Interpretación de imagen',
+  c4: 'Técnica de exploración',
+  c5: 'Ecografía clínica (POCUS)',
+  c6: 'Criterio clínico'
+};
+
+const NIVELES = {
+  explorador: {
+    nombre: 'Nivel Explorador',
+    mensaje: 'Tienes interés en la ecografía, pero todavía necesitas fortalecer los fundamentos de imagen, anatomía y técnica de exploración.',
+    recomendacion: 'Empieza con una formación estructurada, con práctica guiada y protocolos claros, y evita aprender solamente mediante videos aislados.'
+  },
+  en_desarrollo: {
+    nombre: 'Nivel En Desarrollo',
+    mensaje: 'Reconoces algunos conceptos importantes, pero todavía existen vacíos que podrían afectar la adquisición e interpretación de imágenes.',
+    recomendacion: 'Una formación ordenada, de lo básico a lo clínico, te permitiría cerrar esos vacíos con seguridad y avanzar más rápido de lo que imaginas.'
+  },
+  clinico_progreso: {
+    nombre: 'Nivel Clínico en Progreso',
+    mensaje: 'Posees una base favorable para avanzar hacia una aplicación más ordenada de la ecografía en la práctica clínica.',
+    recomendacion: 'Tu siguiente paso natural es sistematizar: protocolos de exploración, interpretación estructurada y práctica supervisada.'
+  },
+  avanzado: {
+    nombre: 'Nivel Avanzado',
+    mensaje: 'Tienes una base sólida. Tu siguiente paso debería ser perfeccionar protocolos, interpretación, documentación y práctica supervisada.',
+    recomendacion: 'Con una formación formal podrías consolidar y certificar lo que ya sabes, y llevar la ecografía a un estándar profesional en tu práctica.'
+  }
+};
+
+const AVATAR_TEXTO = {
+  emprendedor: ' Además, tu objetivo apunta a incorporar un nuevo servicio: según tu propio cálculo, una formación estructurada se recuperaría en pocas semanas de trabajo.',
+  empleable: ' Además, tu perfil apunta a crecer en el mercado laboral: el manejo de ecografía es una de las competencias más valoradas hoy en vacantes clínicas y hospitalarias.',
+  clinico: ' Además, tu objetivo es fortalecer tu criterio clínico: la ecografía estructurada eleva de inmediato la calidad diagnóstica de tu consulta.'
+};
+
+function renderResultado(nombre){
+  const nivel = NIVELES[calcularNivel()];
+  const primerNombre = nombre.split(' ')[0];
+
+  document.getElementById('resNivel').textContent = nivel.nombre;
+  document.getElementById('resSaludo').textContent =
+    primerNombre + ', este es tu punto de partida según tu evaluación de hoy.';
+
+  const puntaje = respuestas.puntaje_conocimiento;
+  document.getElementById('resPuntaje').textContent = puntaje + '%';
+  setTimeout(() => {
+    document.getElementById('resBarra').style.width = Math.max(puntaje, 4) + '%';
+  }, 150);
+
+  // fortalezas y áreas de mejora según respuestas académicas
+  const $fort = document.getElementById('resFortalezas');
+  const $mej  = document.getElementById('resMejoras');
+  $fort.innerHTML = '';
+  $mej.innerHTML = '';
+  let nFort = 0, nMej = 0;
+
+  detalleConocimiento.forEach(d => {
+    const cat = CATEGORIAS[d.pregunta] || d.pregunta;
+    if (d.correcta) {
+      $fort.innerHTML += '<li><span class="mark ok">✓</span>' + cat + '</li>';
+      nFort++;
+    } else {
+      $mej.innerHTML += '<li><span class="mark mejora">△</span>' + cat + '</li>';
+      nMej++;
+    }
+  });
+  document.getElementById('resFortalezasSec').style.display = nFort ? '' : 'none';
+  document.getElementById('resMejorasSec').style.display = nMej ? '' : 'none';
+
+  // potencial
+  document.getElementById('resPotencial').textContent =
+    '$' + (respuestas.potencial_mensual || 0).toLocaleString('en-US');
+  document.getElementById('resPotencialDetalle').textContent = nivel.mensaje;
+
+  // recomendación con matiz por avatar
+  document.getElementById('resRecomendacion').textContent =
+    nivel.recomendacion + (AVATAR_TEXTO[calcularAvatar()] || '');
+
+  // botón de WhatsApp con mensaje prellenado
+  const msg = 'Hola, soy ' + nombre + '. Completé el Reto ECO de FMC. Mi resultado: ' +
+    nivel.nombre + ' (' + puntaje + '% de conocimiento). Quiero recibir mi reporte completo y la guía de inicio.';
+  document.getElementById('btnWhatsapp').href =
+    'https://wa.me/' + WHATSAPP_FMC + '?text=' + encodeURIComponent(msg);
+
+  mostrar($resultado);
 }
 
 function mostrarError(msg){
