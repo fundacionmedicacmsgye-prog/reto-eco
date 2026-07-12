@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Reto ECO | FMC</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scan-deep:#0B1520;
+    --scan-mid:#122334;
+    --echo:#6FE3D4;
+    --echo-dim:#2C7A70;
+    --warm:#FFB65C;
+    --coral:#FF8A7A;
+    --bone:#F2F5F7;
+    --gray:#93A5B3;
+    --card:#0F1E2D;
+    --border:rgba(147,165,179,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--scan-deep);color:var(--bone);
+    min-height:100vh;min-height:100dvh;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:24px 16px 60px}
+  .hidden{display:none!important}
+
+  h1{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:22px;letter-spacing:-.3px;
+  }
+  .sub{font-size:13px;color:var(--gray);margin-top:4px}
+
+  /* ===== PIN ===== */
+  .pin-box{max-width:340px;margin:18vh auto 0;text-align:center}
+  .pin-box h1{margin-bottom:6px}
+  .pin-box p{font-size:13.5px;color:var(--gray);margin-bottom:22px}
+  .pin-box input{
+    width:100%;padding:16px;text-align:center;
+    font-size:24px;letter-spacing:.4em;font-weight:700;
+    background:var(--card);border:1.5px solid var(--border);
+    border-radius:13px;color:var(--bone);margin-bottom:14px;
+  }
+  .pin-box input:focus{outline:none;border-color:var(--echo)}
+  .btn{
+    display:block;width:100%;padding:15px;border:none;border-radius:13px;
+    background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
+    color:#062019;font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;
+    cursor:pointer;
+  }
+  .btn:disabled{opacity:.55}
+  .pin-error{color:var(--coral);font-size:13px;margin-top:12px;display:none}
+
+  /* ===== BARRA SUPERIOR ===== */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .btn-mini{
+    background:var(--card);border:1px solid var(--border);color:var(--gray);
+    padding:9px 13px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;
+  }
+
+  /* ===== RESUMEN ===== */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+  .stat{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:11px 8px;text-align:center;
+  }
+  .stat .n{font-family:'Manrope',sans-serif;font-weight:800;font-size:20px}
+  .stat .l{font-size:10.5px;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+  .stat.a .n{color:var(--echo)}
+  .stat.b .n{color:var(--warm)}
+  .stat.c .n{color:var(--gray)}
+
+  /* ===== FILTROS ===== */
+  .filtros{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+  .filtro{
+    background:var(--card);border:1.5px solid var(--border);color:var(--gray);
+    padding:8px 14px;border-radius:99px;font-size:13px;font-weight:600;
+    cursor:pointer;white-space:nowrap;flex:none;
+  }
+  .filtro.activo{border-color:var(--echo);color:var(--echo)}
+
+  /* ===== TARJETA DE LEAD ===== */
+  .lead{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:15px;padding:16px;margin-bottom:12px;
+  }
+  .lead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .lead-nombre{font-family:'Manrope',sans-serif;font-weight:800;font-size:16.5px;line-height:1.25}
+  .lead-meta{font-size:12.5px;color:var(--gray);margin-top:3px}
+  .badge{
+    flex:none;font-family:'Manrope',sans-serif;font-weight:800;font-size:13px;
+    padding:5px 11px;border-radius:99px;border:1.5px solid;
+  }
+  .badge.A{color:var(--echo);border-color:var(--echo)}
+  .badge.B{color:var(--warm);border-color:var(--warm)}
+  .badge.C{color:var(--gray);border-color:var(--gray)}
+
+  .lead-datos{
+    display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;
+    font-size:12.5px;color:var(--gray);margin:10px 0;line-height:1.45;
+  }
+  .lead-datos b{color:var(--bone);font-weight:600}
+
+  .lead-msg{
+    background:var(--scan-mid);border:1px solid var(--border);
+    border-radius:11px;padding:12px;font-size:13px;line-height:1.55;
+    color:var(--bone);margin:10px 0;max-height:110px;overflow:auto;
+    white-space:pre-wrap;
+  }
+  .lead-msg.vacio{color:var(--gray);font-style:italic}
+
+  .lead-acciones{display:flex;gap:8px;margin-top:10px}
+  .btn-accion{
+    flex:1;padding:12px 8px;border:none;border-radius:11px;
+    font-family:'Manrope',sans-serif;font-weight:800;font-size:13.5px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+    text-decoration:none;
+  }
+  .btn-copiar{background:var(--scan-mid);color:var(--echo);border:1.5px solid var(--echo-dim)}
+  .btn-wa{background:linear-gradient(135deg,#38D67A 0%,#25B864 100%);color:#06200F}
+
+  .lead-estado{margin-top:10px;display:flex;align-items:center;gap:8px}
+  .lead-estado label{font-size:12px;color:var(--gray);flex:none}
+  .lead-estado select{
+    flex:1;padding:10px 12px;border-radius:10px;
+    background:var(--scan-mid);border:1.5px solid var(--border);
+    color:var(--bone);font-size:13.5px;appearance:none;
+  }
+  .lead-estado select:focus{outline:none;border-color:var(--echo)}
+
+  .vacio-lista{text-align:center;color:var(--gray);font-size:14px;padding:40px 20px}
+  .cargando{text-align:center;color:var(--gray);padding:40px}
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--echo);color:#062019;font-weight:700;font-size:14px;
+    padding:12px 22px;border-radius:99px;display:none;z-index:50;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== PANTALLA PIN ===== -->
+<div class="pin-box" id="vistaPIN">
+  <h1>Panel Reto ECO</h1>
+  <p>FMC · Acceso restringido</p>
+  <input type="password" id="inpPIN" inputmode="numeric" maxlength="8" placeholder="••••">
+  <button class="btn" id="btnEntrar">Entrar</button>
+  <p class="pin-error" id="pinError">PIN incorrecto. Intenta de nuevo.</p>
+</div>
+
+<!-- ===== PANEL ===== -->
+<div class="wrap hidden" id="vistaPanel">
+  <div class="topbar">
+    <div>
+      <h1>Leads Reto ECO</h1>
+      <div class="sub" id="subFecha"></div>
+    </div>
+    <button class="btn-mini" id="btnRefrescar">↻ Actualizar</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Total</div></div>
+    <div class="stat a"><div class="n" id="stA">0</div><div class="l">Cat. A</div></div>
+    <div class="stat b"><div class="n" id="stB">0</div><div class="l">Cat. B</div></div>
+    <div class="stat c"><div class="n" id="stC">0</div><div class="l">Cat. C</div></div>
+  </div>
+
+  <div class="filtros" id="filtros">
+    <button class="filtro activo" data-f="todos">Todos</button>
+    <button class="filtro" data-f="A">Prioridad A</button>
+    <button class="filtro" data-f="B">Prioridad B</button>
+    <button class="filtro" data-f="C">Prioridad C</button>
+    <button class="filtro" data-f="nuevo">Sin contactar</button>
+  </div>
+
+  <div id="lista"><div class="cargando">Cargando leads...</div></div>
+</div>
+
+<div class="toast" id="toast">Copiado ✓</div>
+
+<script>
+const FN = '/.netlify/functions/leads';
+let PIN = sessionStorage.getItem('pin_reto_eco') || '';
+let LEADS = [];
+let FILTRO = 'todos';
+
+const T = {
+  perfil: { general:'Médico general', rural:'Médico rural', residente:'Residente',
+    especialista:'Especialista', emergencia:'Médico de emergencia', otro:'Otro prof. salud' },
+  nivel: { explorador:'Explorador', en_desarrollo:'En Desarrollo',
+    clinico_progreso:'Clínico en Progreso', avanzado:'Avanzado' },
+  avatar: { emprendedor:'Emprendedor', empleable:'Empleable', clinico:'Clínico' },
+  objecion: { falta_formacion:'Falta formación', sin_equipo:'No tiene ecógrafo',
+    no_conoce:'No conoce el proceso', falta_tiempo:'Falta de tiempo',
+    costo:'Costo', inseguridad:'Duda poder aprender' },
+  objetivo: { evaluar_pacientes:'Evaluar mejor', complementar:'Complementar consulta',
+    centro_medico:'Trabajar en centro médico', nuevo_servicio:'Nuevo servicio',
+    perfil_laboral:'Mejorar perfil laboral', emprender:'Emprender' }
+};
+
+document.getElementById('btnEntrar').addEventListener('click', entrar);
+document.getElementById('inpPIN').addEventListener('keyup', e => { if (e.key === 'Enter') entrar(); });
+document.getElementById('btnRefrescar').addEventListener('click', cargarLeads);
+document.querySelectorAll('.filtro').forEach(f => {
+  f.addEventListener('click', () => {
+    document.querySelectorAll('.filtro').forEach(x => x.classList.remove('activo'));
+    f.classList.add('activo');
+    FILTRO = f.dataset.f;
+    render();
+  });
+});
+
+if (PIN) { verificarYEntrar(); }
+
+async function entrar(){
+  PIN = document.getElementById('inpPIN').value.trim();
+  if (!PIN) return;
+  verificarYEntrar();
+}
+
+async function verificarYEntrar(){
+  const btn = document.getElementById('btnEntrar');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    const r = await fetch(FN, { headers: { 'x-pin': PIN } });
+    if (r.status === 401) {
+      document.getElementById('pinError').style.display = 'block';
+      sessionStorage.removeItem('pin_reto_eco');
+    } else if (r.ok) {
+      sessionStorage.setItem('pin_reto_eco', PIN);
+      const data = await r.json();
+      LEADS = data.leads || [];
+      document.getElementById('vistaPIN').classList.add('hidden');
+      document.getElementById('vistaPanel').classList.remove('hidden');
+      render();
+    }
+  } catch (e) {
+    document.getElementById('pinError').textContent = 'Error de conexión. Intenta de nuevo.';
+    document.getElementById('pinError').style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Entrar';
+}
+
+async function cargarLeads(){
+  document.getElementById('lista').innerHTML = '<div class="cargando">Actualizando...</div>';
+  try {
+    const r = await fetch(FN, { headers: { 'x-pin': PIN } });
+    const data = await r.json();
+    if (data.ok) LEADS = data.leads || [];
+  } catch (e) {}
+  render();
+}
+
+function render(){
+  const hoy = new Date();
+  document.getElementById('subFecha').textContent =
+    hoy.toLocaleDateString('es-EC', { weekday:'long', day:'numeric', month:'long' });
+
+  document.getElementById('stTotal').textContent = LEADS.length;
+  document.getElementById('stA').textContent = LEADS.filter(l => l.categoria_lead === 'A').length;
+  document.getElementById('stB').textContent = LEADS.filter(l => l.categoria_lead === 'B').length;
+  document.getElementById('stC').textContent = LEADS.filter(l => l.categoria_lead === 'C').length;
+
+  let lista = [...LEADS];
+  if (FILTRO === 'A' || FILTRO === 'B' || FILTRO === 'C') {
+    lista = lista.filter(l => l.categoria_lead === FILTRO);
+  } else if (FILTRO === 'nuevo') {
+    lista = lista.filter(l => (l.estado || 'nuevo') === 'nuevo');
+  }
+
+  // orden: categoría A primero, luego score, luego más recientes
+  const pesoCat = { A:0, B:1, C:2 };
+  lista.sort((x,y) => {
+    const c = (pesoCat[x.categoria_lead] ?? 3) - (pesoCat[y.categoria_lead] ?? 3);
+    if (c !== 0) return c;
+    const s = (y.lead_score || 0) - (x.lead_score || 0);
+    if (s !== 0) return s;
+    return new Date(y.created_at) - new Date(x.created_at);
+  });
+
+  const $l = document.getElementById('lista');
+  if (!lista.length) {
+    $l.innerHTML = '<div class="vacio-lista">No hay leads en este filtro todavía.</div>';
+    return;
+  }
+
+  $l.innerHTML = lista.map(l => {
+    const fecha = new Date(l.created_at).toLocaleDateString('es-EC', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    const waDigitos = (l.whatsapp || '').replace(/\D/g, '');
+    const msg = l.mensaje_apertura || '';
+    const linkWA = 'https://wa.me/' + waDigitos + (msg ? '?text=' + encodeURIComponent(msg) : '');
+    return `
+    <div class="lead">
+      <div class="lead-top">
+        <div>
+          <div class="lead-nombre">${esc(l.nombre || 'Sin nombre')}</div>
+          <div class="lead-meta">${esc(l.pais || '')} · ${T.perfil[l.perfil_profesional] || ''} · ${fecha}</div>
+        </div>
+        <span class="badge ${l.categoria_lead || 'C'}">${l.categoria_lead || '?'} · ${l.lead_score ?? 0}</span>
+      </div>
+      <div class="lead-datos">
+        <span>Nivel: <b>${T.nivel[l.nivel_resultado] || '—'} (${l.puntaje_conocimiento ?? '—'}%)</b></span>
+        <span>Avatar: <b>${T.avatar[l.avatar] || '—'}</b></span>
+        <span>Objetivo: <b>${T.objetivo[l.objetivo_principal] || '—'}</b></span>
+        <span>Objeción: <b>${T.objecion[l.objecion_principal] || '—'}</b></span>
+        <span>Potencial: <b>$${(l.potencial_mensual || 0).toLocaleString('en-US')}/mes</b></span>
+        <span>WhatsApp: <b>${esc(l.whatsapp || '—')}</b></span>
+      </div>
+      <div class="lead-msg ${msg ? '' : 'vacio'}">${msg ? esc(msg) : 'Sin mensaje generado (lead guardado por respaldo directo).'}</div>
+      <div class="lead-acciones">
+        <button class="btn-accion btn-copiar" onclick="copiar('${l.id}')">⧉ Copiar mensaje</button>
+        <a class="btn-accion btn-wa" href="${linkWA}" target="_blank" rel="noopener">WhatsApp →</a>
+      </div>
+      <div class="lead-estado">
+        <label>Estado:</label>
+        <select onchange="cambiarEstado('${l.id}', this.value)">
+          ${opcionEstado(l.estado)}
+        </select>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function opcionEstado(actual){
+  const estados = [
+    ['nuevo','Nuevo'], ['contactado','Contactado'], ['en_conversacion','En conversación'],
+    ['matriculado','Matriculado ✓'], ['descartado','Descartado']
+  ];
+  return estados.map(([v,t]) =>
+    `<option value="${v}" ${ (actual||'nuevo') === v ? 'selected' : '' }>${t}</option>`
+  ).join('');
+}
+
+function copiar(id){
+  const l = LEADS.find(x => x.id === id);
+  if (!l || !l.mensaje_apertura) return;
+  navigator.clipboard.writeText(l.mensaje_apertura).then(() => {
+    const t = document.getElementById('toast');
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 1600);
+  });
+}
+
+async function cambiarEstado(id, estado){
+  try {
+    await fetch(FN, {
+      method: 'POST',
+      headers: { 'x-pin': PIN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, estado })
+    });
+    const l = LEADS.find(x => x.id === id);
+    if (l) l.estado = estado;
+    render();
+  } catch (e) {}
+}
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+
+</body>
+</html>
