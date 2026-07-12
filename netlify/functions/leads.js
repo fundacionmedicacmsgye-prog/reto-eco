@@ -1,1 +1,73 @@
+// Función Netlify: acceso seguro a los leads del Reto ECO para el panel.
+// Protegida con PIN. Variables de entorno requeridas:
+//   SUPABASE_URL, SUPABASE_SERVICE_KEY, PANEL_PIN
 
+exports.handler = async (event) => {
+  const PIN_CORRECTO = process.env.PANEL_PIN;
+  const pinRecibido = event.headers['x-pin'] || event.headers['X-Pin'] || '';
+
+  if (!PIN_CORRECTO || pinRecibido !== PIN_CORRECTO) {
+    return { statusCode: 401, body: JSON.stringify({ ok: false, error: 'PIN incorrecto' }) };
+  }
+
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const KEY = process.env.SUPABASE_SERVICE_KEY;
+  const cab = {
+    'apikey': KEY,
+    'Authorization': 'Bearer ' + KEY,
+    'Content-Type': 'application/json'
+  };
+
+  /* ===== GET: listar leads ===== */
+  if (event.httpMethod === 'GET') {
+    try {
+      const r = await fetch(
+        SUPABASE_URL + '/rest/v1/prospectos_eco?select=*&order=created_at.desc&limit=300',
+        { headers: cab }
+      );
+      if (!r.ok) {
+        console.error('Error Supabase GET:', r.status, await r.text());
+        return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Error al leer' }) };
+      }
+      const leads = await r.json();
+      return { statusCode: 200, body: JSON.stringify({ ok: true, leads }) };
+    } catch (e) {
+      console.error('Fallo de red GET:', e);
+      return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Error de conexión' }) };
+    }
+  }
+
+  /* ===== POST: actualizar estado o notas de un lead ===== */
+  if (event.httpMethod === 'POST') {
+    let cuerpo;
+    try { cuerpo = JSON.parse(event.body || '{}'); }
+    catch (e) { return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Cuerpo inválido' }) }; }
+
+    const { id, estado, notas } = cuerpo;
+    if (!id) return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Falta id' }) };
+
+    const campos = {};
+    if (estado) campos.estado = estado;
+    if (notas !== undefined) campos.notas = notas;
+    if (!Object.keys(campos).length) {
+      return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'Nada que actualizar' }) };
+    }
+
+    try {
+      const r = await fetch(
+        SUPABASE_URL + '/rest/v1/prospectos_eco?id=eq.' + encodeURIComponent(id),
+        { method: 'PATCH', headers: { ...cab, 'Prefer': 'return=minimal' }, body: JSON.stringify(campos) }
+      );
+      if (!r.ok) {
+        console.error('Error Supabase PATCH:', r.status, await r.text());
+        return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Error al actualizar' }) };
+      }
+      return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+    } catch (e) {
+      console.error('Fallo de red PATCH:', e);
+      return { statusCode: 500, body: JSON.stringify({ ok: false, error: 'Error de conexión' }) };
+    }
+  }
+
+  return { statusCode: 405, body: JSON.stringify({ ok: false, error: 'Método no permitido' }) };
+};
