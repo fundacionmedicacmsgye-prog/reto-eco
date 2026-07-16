@@ -1,14 +1,13 @@
 // Función Netlify: acceso seguro a los leads del Reto ECO para el panel.
-// Protegida con PIN. Variables de entorno requeridas:
+// Protegida con PIN (soporta varios PINs separados por comas en PANEL_PIN).
+// Variables de entorno requeridas:
 //   SUPABASE_URL, SUPABASE_SERVICE_KEY, PANEL_PIN
 
 exports.handler = async (event) => {
- const PINES = (process.env.PANEL_PIN || '').split(',').map(p => p.trim()).filter(Boolean);
-  const pinRecibido = event.headers['x-pin'] || event.headers['X-Pin'] || '';
+  const PINES = (process.env.PANEL_PIN || '').split(',').map(p => p.trim()).filter(Boolean);
+  const pinRecibido = (event.headers['x-pin'] || event.headers['X-Pin'] || '').trim();
 
   if (!PINES.length || !PINES.includes(pinRecibido)) {
-
-  if (!PIN_CORRECTO || pinRecibido !== PIN_CORRECTO) {
     return { statusCode: 401, body: JSON.stringify({ ok: false, error: 'PIN incorrecto' }) };
   }
 
