@@ -3,8 +3,10 @@
 //   SUPABASE_URL, SUPABASE_SERVICE_KEY, PANEL_PIN
 
 exports.handler = async (event) => {
-  const PIN_CORRECTO = process.env.PANEL_PIN;
+ const PINES = (process.env.PANEL_PIN || '').split(',').map(p => p.trim()).filter(Boolean);
   const pinRecibido = event.headers['x-pin'] || event.headers['X-Pin'] || '';
+
+  if (!PINES.length || !PINES.includes(pinRecibido)) {
 
   if (!PIN_CORRECTO || pinRecibido !== PIN_CORRECTO) {
     return { statusCode: 401, body: JSON.stringify({ ok: false, error: 'PIN incorrecto' }) };
