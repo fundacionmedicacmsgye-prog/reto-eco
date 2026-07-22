@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+<!-- Meta Pixel (mismo Pixel del Reto ECO original: NO cambiar el ID para conservar el histórico) -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '637475293509186');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=637475293509186&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reto ECO Materno-Fetal | FMC – Formación Médica Continua</title>
+<meta name="description" content="Descubre tu nivel actual en ecografía obstétrica, Doppler materno-fetal y evaluación cervical, y el potencial de esta habilidad en tu práctica médica. Evaluación gratuita de 5 minutos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scan-deep:#0B1520;
+    --scan-mid:#122334;
+    --echo:#6FE3D4;
+    --echo-dim:#2C7A70;
+    --doppler-warm:#FFB65C;
+    --coral:#FF8A7A;
+    --bone:#F2F5F7;
+    --gray-tissue:#93A5B3;
+    --card:#0F1E2D;
+    --card-border:rgba(147,165,179,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--scan-deep);
+    color:var(--bone);
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+  }
+  .sector-wrap{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .sector{position:absolute;top:-32vh;left:50%;transform:translateX(-50%);width:150vw;max-width:900px;aspect-ratio:1/1}
+  .sector svg{width:100%;height:100%;display:block}
+  .sweep{transform-origin:50% 8%;animation:sweep 7s ease-in-out infinite alternate}
+  @keyframes sweep{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+  @media (prefers-reduced-motion: reduce){.sweep{animation:none}}
+  .shell{
+    position:relative;z-index:1;width:100%;max-width:520px;
+    margin:0 auto;padding:32px 22px 28px;
+    display:flex;flex-direction:column;flex:1;
+  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:8vh}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(145deg,var(--echo) 0%,var(--echo-dim) 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Manrope',sans-serif;font-weight:800;font-size:15px;
+    color:var(--scan-deep);letter-spacing:-.5px;
+  }
+  .brand-name{
+    font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--gray-tissue);
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--echo);margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--echo);opacity:.7}
+  h1{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(28px,7.4vw,38px);line-height:1.14;
+    letter-spacing:-.5px;margin-bottom:16px;
+  }
+  h1 em{font-style:normal;color:var(--echo)}
+  .lead{font-size:16px;line-height:1.6;color:var(--gray-tissue);margin-bottom:30px;max-width:44ch}
+  .cta{
+    display:block;width:100%;padding:17px 20px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
+    color:#062019;font-family:'Manrope',sans-serif;font-weight:800;font-size:17px;
+    letter-spacing:.01em;cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 8px 28px rgba(111,227,212,.22);
+  }
+  .cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(111,227,212,.3)}
+  .cta:focus-visible{outline:3px solid var(--doppler-warm);outline-offset:3px}
+  .cta:active{transform:translateY(0)}
+  .cta:disabled{opacity:.55;cursor:default;transform:none}
+  .cta-sub{text-align:center;font-size:13px;color:var(--gray-tissue);margin-top:12px}
+  .trust{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .chip{
+    background:var(--card);border:1px solid var(--card-border);
+    border-radius:12px;padding:13px 14px;display:flex;align-items:flex-start;gap:9px;
+  }
+  .chip svg{flex:none;margin-top:1px}
+  .chip span{font-size:12.5px;line-height:1.4;color:var(--bone);font-weight:500}
+  footer{
+    position:relative;z-index:1;text-align:center;
+    padding:18px 22px 26px;font-size:11.5px;color:var(--gray-tissue);line-height:1.6;
+  }
+  .hidden{display:none!important}
+  .quiz-top{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+  .btn-back{
+    background:var(--card);border:1px solid var(--card-border);
+    color:var(--gray-tissue);width:38px;height:38px;border-radius:11px;
+    font-size:18px;cursor:pointer;flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .btn-back:focus-visible{outline:2px solid var(--echo);outline-offset:2px}
+  .btn-back:disabled{opacity:.35;cursor:default}
+  .progress-wrap{flex:1}
+  .progress-label{
+    font-size:11px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-tissue);margin-bottom:6px;
+  }
+  .progress-bar{height:6px;background:var(--card);border-radius:99px;overflow:hidden}
+  .progress-fill{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,var(--echo-dim),var(--echo));
+    border-radius:99px;transition:width .35s ease;
+  }
+  .q-block{
+    font-size:12px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--echo);margin-bottom:10px;
+  }
+  .q-text{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(21px,5.6vw,26px);line-height:1.25;margin-bottom:24px;
+  }
+  .q-nota{
+    font-size:13.5px;color:var(--gray-tissue);line-height:1.5;
+    margin:-14px 0 22px;
+  }
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    background:var(--card);border:1.5px solid var(--card-border);
+    border-radius:13px;padding:16px 16px;text-align:left;
+    color:var(--bone);font-size:15.5px;font-weight:500;line-height:1.4;
+    cursor:pointer;transition:border-color .12s ease, background .12s ease, transform .1s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .opt:hover{border-color:var(--echo-dim)}
+  .opt:focus-visible{outline:2px solid var(--echo);outline-offset:2px}
+  .opt.selected{
+    border-color:var(--echo);
+    background:linear-gradient(0deg,rgba(111,227,212,.08),rgba(111,227,212,.08)),var(--card);
+    transform:scale(.995);
+  }
+  .opt.correcta{
+    border-color:var(--echo);
+    background:linear-gradient(0deg,rgba(111,227,212,.12),rgba(111,227,212,.12)),var(--card);
+  }
+  .opt.incorrecta{
+    border-color:var(--coral);
+    background:linear-gradient(0deg,rgba(255,138,122,.1),rgba(255,138,122,.1)),var(--card);
+  }
+  .opt:disabled{cursor:default}
+  .opt:disabled:hover{border-color:var(--card-border)}
+  .opt.correcta:disabled:hover{border-color:var(--echo)}
+  .opt.incorrecta:disabled:hover{border-color:var(--coral)}
+  .explicacion{
+    margin-top:18px;border-radius:13px;padding:16px;
+    border:1px solid var(--card-border);background:var(--scan-mid);
+  }
+  .explicacion .tag{
+    display:inline-block;font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .explicacion .tag.ok{color:var(--echo)}
+  .explicacion .tag.no{color:var(--coral)}
+  .explicacion p{font-size:14.5px;line-height:1.55;color:var(--bone)}
+  .btn-continuar{
+    margin-top:16px;display:block;width:100%;padding:15px;
+    border:none;border-radius:13px;
+    background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
+    color:#062019;font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;
+    cursor:pointer;
+  }
+  .btn-continuar:focus-visible{outline:3px solid var(--doppler-warm);outline-offset:3px}
+  .fade-in{animation:fadeUp .3s ease}
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .interstitial{text-align:center;padding-top:6vh}
+  .interstitial .icon-ring{
+    width:74px;height:74px;margin:0 auto 22px;border-radius:50%;
+    border:2px solid var(--echo);display:flex;align-items:center;justify-content:center;
+  }
+  .interstitial h2{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:24px;line-height:1.25;margin-bottom:12px;
+  }
+  .interstitial p{font-size:15px;line-height:1.6;color:var(--gray-tissue);max-width:40ch;margin:0 auto 28px}
+  /* ============ RESULTADO PERSONALIZADO ============ */
+  .res-nivel{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(26px,7vw,32px);line-height:1.15;
+    margin-bottom:6px;color:var(--echo);
+  }
+  .res-saludo{
+    font-size:14.5px;color:var(--gray-tissue);margin-bottom:22px;line-height:1.5;
+  }
+  .res-score-card{
+    background:var(--card);border:1px solid rgba(111,227,212,.35);
+    border-radius:16px;padding:20px;margin-bottom:14px;
+  }
+  .res-score-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .res-score-top .etiqueta{
+    font-size:11.5px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-tissue);
+  }
+  .res-score-top .num{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:34px;color:var(--bone);
+  }
+  .res-barra{height:9px;background:var(--scan-mid);border-radius:99px;overflow:hidden}
+  .res-barra-fill{
+    height:100%;width:0%;border-radius:99px;
+    background:linear-gradient(90deg,var(--echo-dim),var(--echo));
+    transition:width .8s ease;
+  }
+  .res-seccion{
+    background:var(--card);border:1px solid var(--card-border);
+    border-radius:16px;padding:18px;margin-bottom:14px;
+  }
+  .res-seccion h3{
+    font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;
+    letter-spacing:.08em;text-transform:uppercase;
+    color:var(--gray-tissue);margin-bottom:12px;
+  }
+  .res-lista{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .res-lista li{
+    display:flex;align-items:flex-start;gap:9px;
+    font-size:14.5px;line-height:1.45;color:var(--bone);
+  }
+  .res-lista .mark{flex:none;font-weight:800;font-family:'Manrope',sans-serif}
+  .res-lista .mark.ok{color:var(--echo)}
+  .res-lista .mark.mejora{color:var(--doppler-warm)}
+  .res-texto{font-size:14.5px;line-height:1.6;color:var(--bone)}
+  .res-potencial{
+    display:flex;align-items:baseline;gap:8px;margin-bottom:6px;
+  }
+  .res-potencial .cifra{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:28px;color:var(--echo);
+  }
+  .res-potencial .unidad{font-size:13px;color:var(--gray-tissue)}
+  .btn-whatsapp{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;padding:17px 20px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,#38D67A 0%,#25B864 100%);
+    color:#06200F;font-family:'Manrope',sans-serif;font-weight:800;font-size:16.5px;
+    cursor:pointer;text-decoration:none;
+    box-shadow:0 8px 28px rgba(56,214,122,.22);
+    transition:transform .15s ease;
+    margin-top:6px;
+  }
+  .btn-whatsapp:hover{transform:translateY(-2px)}
+  .btn-whatsapp svg{flex:none}
+  .res-nota{
+    text-align:center;font-size:12.5px;color:var(--gray-tissue);
+    margin-top:12px;line-height:1.5;
+  }
+  /* ============ CALCULADORA ============ */
+  .calc-title{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:clamp(23px,6vw,28px);line-height:1.2;margin-bottom:8px;
+  }
+  .calc-sub{font-size:14.5px;color:var(--gray-tissue);line-height:1.55;margin-bottom:24px}
+  .calc-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+  .calc-card{
+    background:var(--card);border:1px solid var(--card-border);
+    border-radius:14px;padding:18px;
+  }
+  .calc-card .etiqueta{
+    font-size:11.5px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-tissue);margin-bottom:6px;
+  }
+  .calc-card .cifra{
+    font-family:'Manrope',sans-serif;font-weight:800;
+    font-size:30px;color:var(--echo);letter-spacing:-.5px;
+  }
+  .calc-card .detalle{font-size:13px;color:var(--gray-tissue);margin-top:4px;line-height:1.5}
+  .calc-card.destacada{border-color:rgba(111,227,212,.4)}
+  .disclaimer{
+    font-size:12px;color:var(--gray-tissue);line-height:1.6;
+    border-left:2px solid var(--card-border);padding-left:12px;margin-bottom:24px;
+  }
+  /* ============ FORMULARIO ============ */
+  .form-grupo{margin-bottom:16px}
+  .form-grupo label{
+    display:block;font-size:13px;font-weight:600;
+    color:var(--gray-tissue);margin-bottom:7px;
+  }
+  .form-grupo input, .form-grupo select{
+    width:100%;padding:15px 14px;border-radius:12px;
+    border:1.5px solid var(--card-border);background:var(--card);
+    color:var(--bone);font-family:'Inter',sans-serif;font-size:16px;
+    appearance:none;
+  }
+  .form-grupo input:focus, .form-grupo select:focus{
+    outline:none;border-color:var(--echo);
+  }
+  .form-grupo select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2393A5B3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 14px center;
+  }
+  .consent{
+    display:flex;align-items:flex-start;gap:10px;
+    font-size:12.5px;color:var(--gray-tissue);line-height:1.55;
+    margin:6px 0 20px;
+  }
+  .consent input{
+    width:19px;height:19px;flex:none;margin-top:1px;
+    accent-color:var(--echo);
+  }
+  .form-error{
+    display:none;font-size:13px;color:var(--coral);
+    margin:-8px 0 14px;line-height:1.4;
+  }
+</style>
+</head>
+<body>
+<div class="sector-wrap" aria-hidden="true">
+  <div class="sector">
+    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="fan" cx="50%" cy="8%" r="92%">
+          <stop offset="0%" stop-color="#1B3448" stop-opacity=".9"/>
+          <stop offset="55%" stop-color="#122334" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#0B1520" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6FE3D4" stop-opacity=".55"/>
+          <stop offset="100%" stop-color="#6FE3D4" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="M200 32 L38 360 A 210 210 0 0 0 362 360 Z" fill="url(#fan)"/>
+      <g stroke="#2A445C" stroke-width="1" fill="none" opacity=".5">
+        <path d="M117 200 A 118 118 0 0 1 283 200"/>
+        <path d="M85 264 A 165 165 0 0 1 315 264"/>
+        <path d="M55 330 A 213 213 0 0 1 345 330"/>
+      </g>
+      <g class="sweep">
+        <path d="M200 32 L200 372" stroke="url(#beam)" stroke-width="2.5"/>
+      </g>
+    </svg>
+  </div>
+</div>
+<!-- ============ PANTALLA INICIAL ============ -->
+<main class="shell" id="pantallaInicio">
+  <div class="brand">
+    <div class="brand-mark">F</div>
+    <div class="brand-name">FMC · Formación Médica Continua</div>
+  </div>
+  <span class="eyebrow">Reto ECO Materno-Fetal</span>
+  <h1>¿Qué tan preparado estás para dominar la <em>ecografía obstétrica</em> y el Doppler materno-fetal?</h1>
+  <p class="lead">Completa esta evaluación de 5 minutos y descubre tu nivel actual en ecografía obstétrica, las áreas que debes fortalecer y el potencial que podría tener esta especialización en tu carrera.</p>
+  <button class="cta" id="btnIniciar">Iniciar evaluación gratuita</button>
+  <p class="cta-sub">Sin costo · Resultado inmediato al finalizar</p>
+  <div class="trust">
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span>Duración: 5 minutos</span>
+    </div>
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      <span>Resultado inmediato y personalizado</span>
+    </div>
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z"/></svg>
+      <span>Evaluación orientativa, no certificante</span>
+    </div>
+    <div class="chip">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      <span>Dirigida a médicos, obstetras y profesionales de salud materna</span>
+    </div>
+  </div>
+</main>
+<!-- ============ PANTALLA DEL QUIZ ============ -->
+<main class="shell hidden" id="pantallaQuiz">
+  <div class="quiz-top">
+    <button class="btn-back" id="btnAtras" aria-label="Pregunta anterior">←</button>
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">Pregunta 1</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+  <div id="quizContenido"></div>
+</main>
+<!-- ============ INTERLUDIO 1 ============ -->
+<main class="shell hidden" id="pantallaInterludio">
+  <div class="interstitial fade-in">
+    <div class="icon-ring">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+    <h2>Ahora, midamos tu conocimiento</h2>
+    <p>Vienen 6 preguntas sobre embarazo temprano, biometría, Doppler obstétrico y evaluación cervical. Después de cada respuesta verás una explicación breve. No busques la perfección: busca conocer tu punto de partida.</p>
+    <button class="cta" id="btnEmpezarConocimiento">Comenzar</button>
+  </div>
+</main>
+<!-- ============ INTERLUDIO 2 ============ -->
+<main class="shell hidden" id="pantallaInterludio2">
+  <div class="interstitial fade-in">
+    <div class="icon-ring">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6FE3D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+    </div>
+    <h2>Última etapa: tu potencial profesional</h2>
+    <p>Unas pocas preguntas más para dimensionar lo que la ecografía obstétrica podría representar en tu carrera y en tu consulta. No hay respuestas correctas ni incorrectas.</p>
+    <button class="cta" id="btnEmpezarPotencial">Continuar</button>
+  </div>
+</main>
+<!-- ============ CALCULADORA DE POTENCIAL ============ -->
+<main class="shell hidden" id="pantallaCalculadora">
+  <span class="eyebrow">Tu potencial estimado</span>
+  <h2 class="calc-title" id="calcTitulo">Esto podría representar la ecografía obstétrica en tu práctica</h2>
+  <p class="calc-sub" id="calcIntro"></p>
+  <div class="calc-grid">
+    <div class="calc-card destacada">
+      <div class="etiqueta">Facturación potencial mensual</div>
+      <div class="cifra" id="calcMensual">$0</div>
+      <div class="detalle" id="calcMensualDetalle"></div>
+    </div>
+    <div class="calc-card">
+      <div class="etiqueta">Proyección anual</div>
+      <div class="cifra" id="calcAnual">$0</div>
+      <div class="detalle">Manteniendo el mismo ritmo durante 12 meses.</div>
+    </div>
+    <div class="calc-card">
+      <div class="etiqueta">Retorno de tu cuota mensual de formación</div>
+      <div class="cifra" id="calcRetorno">—</div>
+      <div class="detalle" id="calcRetornoDetalle"></div>
+    </div>
+  </div>
+  <p class="disclaimer">Este cálculo es una simulación orientativa basada en tus propias respuestas. Los resultados reales dependen de la experiencia, la demanda local, la normativa, los costos de equipo e insumos y la forma de ejercicio profesional. No constituye una promesa de ingresos.</p>
+  <button class="cta" id="btnVerResultado">Ver mi resultado personalizado</button>
+</main>
+<!-- ============ CAPTURA DE DATOS ============ -->
+<main class="shell hidden" id="pantallaDatos">
+  <span class="eyebrow">Tu reporte está listo</span>
+  <h2 class="calc-title">Guarda tu resultado</h2>
+  <p class="calc-sub">Ingresa tus datos para guardar tu evaluación y recibir tu reporte personalizado con recomendaciones para tu perfil.</p>
+  <div class="form-grupo">
+    <label for="inpNombre">Nombre completo</label>
+    <input type="text" id="inpNombre" autocomplete="name" placeholder="Dr./Dra. Nombre Apellido">
+  </div>
+  <div class="form-grupo">
+    <label for="selPais">País</label>
+    <select id="selPais">
+      <option value="">Selecciona tu país</option>
+      <option value="Ecuador" data-prefijo="+593">Ecuador</option>
+      <option value="México" data-prefijo="+52">México</option>
+      <option value="El Salvador" data-prefijo="+503">El Salvador</option>
+      <option value="Honduras" data-prefijo="+504">Honduras</option>
+      <option value="Costa Rica" data-prefijo="+506">Costa Rica</option>
+      <option value="Guatemala" data-prefijo="+502">Guatemala</option>
+      <option value="Colombia" data-prefijo="+57">Colombia</option>
+      <option value="Perú" data-prefijo="+51">Perú</option>
+      <option value="Bolivia" data-prefijo="+591">Bolivia</option>
+      <option value="Estados Unidos" data-prefijo="+1">Estados Unidos</option>
+      <option value="Otro" data-prefijo="">Otro</option>
+    </select>
+  </div>
+  <div class="form-grupo">
+    <label for="inpWhatsapp">WhatsApp</label>
+    <input type="tel" id="inpWhatsapp" autocomplete="tel" inputmode="tel" placeholder="Primero selecciona tu país">
+  </div>
+  <label class="consent">
+    <input type="checkbox" id="chkConsent">
+    <span>Autorizo el envío de mi resultado y comunicaciones relacionadas con formación médica de FMC. Puedo solicitar la eliminación de mis datos en cualquier momento.</span>
+  </label>
+  <p class="form-error" id="formError"></p>
+  <button class="cta" id="btnGuardar">Guardar y ver mi resultado</button>
+</main>
+<!-- ============ RESULTADO PERSONALIZADO ============ -->
+<main class="shell hidden" id="pantallaResultado">
+  <span class="eyebrow">Tu resultado · Reto ECO Materno-Fetal</span>
+  <div class="res-nivel" id="resNivel">Nivel</div>
+  <p class="res-saludo" id="resSaludo"></p>
+  <div class="res-score-card">
+    <div class="res-score-top">
+      <span class="etiqueta">Conocimiento en ecografía obstétrica</span>
+      <span class="num" id="resPuntaje">0%</span>
+    </div>
+    <div class="res-barra"><div class="res-barra-fill" id="resBarra"></div></div>
+  </div>
+  <div class="res-seccion" id="resFortalezasSec">
+    <h3>Fortalezas</h3>
+    <ul class="res-lista" id="resFortalezas"></ul>
+  </div>
+  <div class="res-seccion" id="resMejorasSec">
+    <h3>Áreas a fortalecer</h3>
+    <ul class="res-lista" id="resMejoras"></ul>
+  </div>
+  <div class="res-seccion">
+    <h3>Tu potencial estimado</h3>
+    <div class="res-potencial">
+      <span class="cifra" id="resPotencial">$0</span>
+      <span class="unidad">mensuales brutos (simulación orientativa)</span>
+    </div>
+    <p class="res-texto" id="resPotencialDetalle"></p>
+  </div>
+  <div class="res-seccion">
+    <h3>Recomendación para tu perfil</h3>
+    <p class="res-texto" id="resRecomendacion"></p>
+  </div>
+  <a class="btn-whatsapp" id="btnWhatsapp" target="_blank" rel="noopener">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.89 1.22 3.09.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.7.25-1.29.17-1.42-.07-.13-.27-.2-.57-.35zM12.05 21.79h-.01a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.72.97.99-3.62-.23-.37a9.8 9.8 0 0 1-1.5-5.22c0-5.42 4.42-9.83 9.84-9.83 2.63 0 5.1 1.02 6.95 2.88a9.77 9.77 0 0 1 2.88 6.96c0 5.42-4.42 9.83-9.84 9.83zm8.37-18.2A11.72 11.72 0 0 0 12.05 .13C5.53.13.22 5.43.22 11.95c0 2.08.54 4.12 1.58 5.92L.13 24l6.28-1.65a11.85 11.85 0 0 0 5.63 1.43h.01c6.52 0 11.83-5.3 11.83-11.83 0-3.16-1.23-6.13-3.46-8.36z"/></svg>
+    Recibir mi reporte completo por WhatsApp
+  </a>
+  <p class="res-nota">Un asesor académico de FMC te enviará tu reporte y una guía de inicio, sin compromiso.</p>
+</main>
+<footer id="piePagina">
+  FMC – Formación Médica Continua · Diplomado Internacional de Ecografía Obstétrica, Doppler Obstétrico y Evaluación Cervical<br>
+  Esta evaluación es orientativa y no constituye una certificación académica.
+</footer>
+<script>
+/* ================= CONFIGURACIÓN SUPABASE (mismo proyecto del Reto ECO original) ================= */
+const SUPABASE_URL = 'https://tsuasspfzvxeetuodobx.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_jHlwGifWfB8uHPof9nJQ9A_5daMRUYM';
+const TABLA_PROSPECTOS = 'prospectos_eco_obstetrico'; // tabla NUEVA, separada de prospectos_eco
+/* ================= ESTADO GLOBAL ================= */
+const respuestas = {};
+const detalleConocimiento = [];
+let correctas = 0;
+/* ================= BLOQUE 1: PERFIL PROFESIONAL ================= */
+const bloque1 = [
+  {
+    tipo: 'perfil',
+    id: 'perfil_profesional',
+    bloque: 'Perfil profesional',
+    texto: '¿Cuál es tu perfil profesional?',
+    opciones: [
+      { valor: 'gineco_obstetra',  texto: 'Gineco-obstetra' },
+      { valor: 'general_embarazo', texto: 'Médico general que atiende embarazadas' },
+      { valor: 'rural',            texto: 'Médico rural' },
+      { valor: 'residente',        texto: 'Residente (ginecología/medicina familiar)' },
+      { valor: 'emergencia',       texto: 'Médico de emergencia' },
+      { valor: 'otro',             texto: 'Otro profesional de la salud' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'pacientes_mes',
+    bloque: 'Perfil profesional',
+    texto: '¿Cuántas pacientes embarazadas atiendes aproximadamente al mes?',
+    opciones: [
+      { valor: 'menos_50',  texto: 'Menos de 50' },
+      { valor: '50_100',    texto: 'Entre 50 y 100' },
+      { valor: '101_200',   texto: 'Entre 101 y 200' },
+      { valor: '201_400',   texto: 'Entre 201 y 400' },
+      { valor: 'mas_400',   texto: 'Más de 400' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'realiza_ecografias',
+    bloque: 'Perfil profesional',
+    texto: '¿Actualmente realizas ecografías obstétricas?',
+    opciones: [
+      { valor: 'frecuente',       texto: 'Sí, con frecuencia' },
+      { valor: 'ocasional',       texto: 'Sí, ocasionalmente' },
+      { valor: 'interpreta',      texto: 'Solo observo o interpreto algunos casos' },
+      { valor: 'quiere_aprender', texto: 'No, pero quiero aprender' },
+      { valor: 'nunca',           texto: 'Nunca he tenido contacto con la ecografía obstétrica' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'etapa_profesional',
+    bloque: 'Perfil profesional',
+    texto: '¿En qué etapa profesional te encuentras?',
+    opciones: [
+      { valor: 'busca_empleo',    texto: 'Buscando un empleo estable' },
+      { valor: 'mejor_puesto',    texto: 'Empleado, pero quiero un mejor puesto' },
+      { valor: 'consulta_propia', texto: 'Tengo consulta propia y quiero potenciarla' },
+      { valor: 'postgrado_rural', texto: 'Preparando postgrado o año rural' }
+    ]
+  }
+];
+/* ================= BLOQUE 2: CONOCIMIENTO ================= */
+const bloque2 = [
+  {
+    tipo: 'conocimiento',
+    id: 'c1',
+    bloque: 'Conocimiento · Embarazo temprano',
+    texto: '¿Qué hallazgo confirma la viabilidad de un embarazo intrauterino en una ecografía temprana?',
+    opciones: [
+      { valor: 'a', texto: 'Saco gestacional visible únicamente' },
+      { valor: 'b', texto: 'Presencia de latido cardíaco fetal' },
+      { valor: 'c', texto: 'Saco vitelino de tamaño normal' },
+      { valor: 'd', texto: 'Ausencia de sangrado vaginal' }
+    ],
+    correcta: 'b',
+    explicacion: 'La viabilidad se confirma con la presencia de actividad cardiaca embrionaria, generalmente visible desde que el embrión mide alrededor de 7 mm de longitud céfalo-caudal (CRL).'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c2',
+    bloque: 'Conocimiento · Primer trimestre',
+    texto: '¿Cuál es el marcador ecográfico principal para el cribado de aneuploidías en el primer trimestre?',
+    opciones: [
+      { valor: 'a', texto: 'Diámetro biparietal' },
+      { valor: 'b', texto: 'Translucencia nucal' },
+      { valor: 'c', texto: 'Índice de líquido amniótico' },
+      { valor: 'd', texto: 'Longitud femoral' }
+    ],
+    correcta: 'b',
+    explicacion: 'La translucencia nucal, medida entre las semanas 11 y 14, es el marcador ecográfico central del cribado combinado de aneuploidías del primer trimestre.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c3',
+    bloque: 'Conocimiento · Segundo trimestre',
+    texto: '¿Qué medida biométrica se utiliza principalmente para estimar la edad gestacional en el segundo trimestre?',
+    opciones: [
+      { valor: 'a', texto: 'Translucencia nucal' },
+      { valor: 'b', texto: 'Diámetro biparietal' },
+      { valor: 'c', texto: 'Saco vitelino' },
+      { valor: 'd', texto: 'Frecuencia cardiaca fetal' }
+    ],
+    correcta: 'b',
+    explicacion: 'El diámetro biparietal, junto con la circunferencia cefálica, abdominal y la longitud femoral, forma parte de la biometría estándar para estimar edad gestacional y peso fetal en el segundo trimestre.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c4',
+    bloque: 'Conocimiento · Doppler obstétrico',
+    texto: 'En el Doppler de arterias uterinas, ¿qué hallazgo se asocia a mayor riesgo de preeclampsia?',
+    opciones: [
+      { valor: 'a', texto: 'Notch (muesca) protodiastólico bilateral' },
+      { valor: 'b', texto: 'Índice de pulsatilidad bajo' },
+      { valor: 'c', texto: 'Flujo diastólico aumentado' },
+      { valor: 'd', texto: 'Ausencia de flujo sistólico' }
+    ],
+    correcta: 'a',
+    explicacion: 'La presencia de notch bilateral y un índice de pulsatilidad elevado en arterias uterinas se asocian a mayor resistencia placentaria y mayor riesgo de preeclampsia y restricción del crecimiento fetal.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c5',
+    bloque: 'Conocimiento · Bienestar fetal',
+    texto: 'Dentro del perfil biofísico fetal, ¿qué parámetro refleja mejor el estado de oxigenación crónica del feto?',
+    opciones: [
+      { valor: 'a', texto: 'Movimientos fetales' },
+      { valor: 'b', texto: 'Tono fetal' },
+      { valor: 'c', texto: 'Volumen de líquido amniótico' },
+      { valor: 'd', texto: 'Frecuencia cardiaca en el monitoreo (NST)' }
+    ],
+    correcta: 'c',
+    explicacion: 'El volumen de líquido amniótico refleja el estado de oxigenación crónica (perfusión renal sostenida), mientras que movimientos, tono y NST reflejan más bien el estado agudo del feto.'
+  },
+  {
+    tipo: 'conocimiento',
+    id: 'c6',
+    bloque: 'Conocimiento · Evaluación cervical',
+    texto: 'En el Sistema Bethesda, ¿cómo se abrevia una lesión intraepitelial escamosa de alto grado?',
+    opciones: [
+      { valor: 'a', texto: 'LSIL' },
+      { valor: 'b', texto: 'HSIL' },
+      { valor: 'c', texto: 'ASC-US' },
+      { valor: 'd', texto: 'AGC' }
+    ],
+    correcta: 'b',
+    explicacion: 'HSIL (lesión intraepitelial escamosa de alto grado) tiene mayor riesgo de progresión y requiere colposcopia y manejo diferenciado frente a una lesión de bajo grado (LSIL).'
+  }
+];
+/* ================= BLOQUE 3: EMPLEABILIDAD ================= */
+const bloque3 = [
+  {
+    tipo: 'perfil',
+    id: 'ha_visto_ofertas_eco',
+    bloque: 'Tu potencial · Mercado laboral',
+    texto: '¿Has visto ofertas laborales que soliciten manejo de ecografía obstétrica?',
+    nota: 'Hospitales, clínicas materno-infantiles, seguridad social, ONG o centros de salud materna.',
+    opciones: [
+      { valor: 'si_varias',  texto: 'Sí, varias' },
+      { valor: 'si_alguna',  texto: 'Sí, alguna vez' },
+      { valor: 'no_fijado',  texto: 'No me he fijado' },
+      { valor: 'no_busca',   texto: 'No estoy buscando empleo actualmente' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'percepcion_ventaja',
+    bloque: 'Tu potencial · Mercado laboral',
+    texto: 'En tu percepción, ¿un médico que domina la ecografía obstétrica tiene ventaja al aplicar a un puesto?',
+    opciones: [
+      { valor: 'decisiva',  texto: 'Sí, una ventaja decisiva' },
+      { valor: 'alguna',    texto: 'Sí, alguna ventaja' },
+      { valor: 'no_seguro', texto: 'No estoy seguro' }
+    ]
+  }
+];
+/* ================= BLOQUE 4: ECONÓMICO ================= */
+const bloque4 = [
+  {
+    tipo: 'perfil',
+    id: 'estudios_potenciales_mes',
+    bloque: 'Tu potencial · Capacidad de servicio',
+    texto: 'Si pudieras incorporar ecografías obstétricas a tu práctica, ¿cuántas podrías realizar al mes?',
+    opciones: [
+      { valor: '1_5',    texto: 'Entre 1 y 5' },
+      { valor: '6_10',   texto: 'Entre 6 y 10' },
+      { valor: '11_20',  texto: 'Entre 11 y 20' },
+      { valor: '21_40',  texto: 'Entre 21 y 40' },
+      { valor: 'mas_40', texto: 'Más de 40' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'valor_promedio_eco',
+    bloque: 'Tu potencial · Contexto de mercado',
+    texto: '¿Cuál es el valor promedio de una ecografía obstétrica en tu ciudad o país?',
+    opciones: [
+      { valor: 'menos_20', texto: 'Menos de $20' },
+      { valor: '20_35',    texto: 'Entre $20 y $35' },
+      { valor: '36_50',    texto: 'Entre $36 y $50' },
+      { valor: '51_80',    texto: 'Entre $51 y $80' },
+      { valor: 'mas_80',   texto: 'Más de $80' },
+      { valor: 'no_sabe',  texto: 'No lo sé' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'objetivo_principal',
+    bloque: 'Tu potencial · Objetivo',
+    texto: '¿Cuál sería tu principal objetivo al especializarte en ecografía obstétrica?',
+    opciones: [
+      { valor: 'evaluar_pacientes', texto: 'Evaluar mejor a mis pacientes embarazadas' },
+      { valor: 'complementar',      texto: 'Complementar mi consulta obstétrica/ginecológica' },
+      { valor: 'centro_medico',     texto: 'Trabajar en un centro materno-fetal u hospital' },
+      { valor: 'nuevo_servicio',    texto: 'Incorporar la ecografía obstétrica como nuevo servicio' },
+      { valor: 'perfil_laboral',    texto: 'Mejorar mi perfil profesional en salud materna' },
+      { valor: 'emprender',         texto: 'Emprender con un servicio de ecografía obstétrica' }
+    ]
+  },
+  {
+    tipo: 'perfil',
+    id: 'objecion_principal',
+    bloque: 'Tu potencial · Punto de partida',
+    texto: '¿Qué te impide comenzar actualmente?',
+    opciones: [
+      { valor: 'falta_formacion', texto: 'Falta de formación estructurada' },
+      { valor: 'sin_equipo',      texto: 'No tengo ecógrafo' },
+      { valor: 'no_conoce',       texto: 'No conozco el proceso para empezar' },
+      { valor: 'falta_tiempo',    texto: 'Falta de tiempo' },
+      { valor: 'costo',           texto: 'El costo de la capacitación' },
+      { valor: 'inseguridad',     texto: 'No sé si podré aprender' }
+    ]
+  }
+];
+/* ================= FLUJO ================= */
+const flujo = [...bloque1, ...bloque2, ...bloque3, ...bloque4];
+const TOTAL_PREGUNTAS = flujo.length;
+const FIN_BLOQUE1 = bloque1.length - 1;
+const FIN_BLOQUE2 = bloque1.length + bloque2.length - 1;
+let indiceActual = 0;
+let respondida = false;
+const $inicio      = document.getElementById('pantallaInicio');
+const $quiz        = document.getElementById('pantallaQuiz');
+const $interludio  = document.getElementById('pantallaInterludio');
+const $interludio2 = document.getElementById('pantallaInterludio2');
+const $calculadora = document.getElementById('pantallaCalculadora');
+const $datos       = document.getElementById('pantallaDatos');
+const $resultado   = document.getElementById('pantallaResultado');
+const $contenido   = document.getElementById('quizContenido');
+const $fill        = document.getElementById('progressFill');
+const $label       = document.getElementById('progressLabel');
+const $atras       = document.getElementById('btnAtras');
+const $pie         = document.getElementById('piePagina');
+document.getElementById('btnIniciar').addEventListener('click', () => {
+  if (typeof fbq === 'function') fbq('trackCustom', 'InicioRetoObstetrico');
+  mostrar($quiz);
+  indiceActual = 0;
+  renderPregunta();
+});
+document.getElementById('btnEmpezarConocimiento').addEventListener('click', () => {
+  mostrar($quiz);
+  renderPregunta();
+});
+document.getElementById('btnEmpezarPotencial').addEventListener('click', () => {
+  mostrar($quiz);
+  renderPregunta();
+});
+document.getElementById('btnVerResultado').addEventListener('click', () => {
+  mostrar($datos);
+});
+document.getElementById('btnGuardar').addEventListener('click', guardarProspecto);
+/* Prefijo automático de WhatsApp según el país seleccionado */
+document.getElementById('selPais').addEventListener('change', function(){
+  const opcion = this.options[this.selectedIndex];
+  const prefijo = opcion.dataset.prefijo || '';
+  const $wa = document.getElementById('inpWhatsapp');
+  const actual = $wa.value.trim();
+  if (actual === '' || /^\+\d{1,4}\s?$/.test(actual)) {
+    $wa.value = prefijo ? prefijo + ' ' : '';
+  } else if (prefijo && !actual.startsWith('+')) {
+    $wa.value = prefijo + ' ' + actual;
+  }
+  $wa.placeholder = prefijo ? prefijo + ' 99 999 9999' : 'Incluye tu código de país';
+});
+$atras.addEventListener('click', () => {
+  if (indiceActual === 0) {
+    mostrar($inicio);
+  } else if (flujo[indiceActual - 1].tipo === 'conocimiento') {
+    return;
+  } else {
+    indiceActual--;
+    renderPregunta();
+  }
+});
+function mostrar(pantalla){
+  [$inicio,$quiz,$interludio,$interludio2,$calculadora,$datos,$resultado].forEach(s => s.classList.add('hidden'));
+  pantalla.classList.remove('hidden');
+  $pie.classList.toggle('hidden', pantalla === $quiz);
+  window.scrollTo(0,0);
+}
+function renderPregunta(){
+  const p = flujo[indiceActual];
+  respondida = false;
+  const avance = (indiceActual / TOTAL_PREGUNTAS) * 100;
+  $fill.style.width = Math.max(avance, 4) + '%';
+  $label.textContent = 'Pregunta ' + (indiceActual + 1) + ' de ' + TOTAL_PREGUNTAS;
+  $atras.disabled = indiceActual > 0 && flujo[indiceActual - 1].tipo === 'conocimiento';
+  let html = '<div class="fade-in">';
+  html += '<div class="q-block">' + p.bloque + '</div>';
+  html += '<div class="q-text">' + p.texto + '</div>';
+  if (p.nota) html += '<p class="q-nota">' + p.nota + '</p>';
+  html += '<div class="opts" id="listaOpts">';
+  p.opciones.forEach(op => {
+    const sel = (p.tipo === 'perfil' && respuestas[p.id] === op.valor) ? ' selected' : '';
+    html += '<button class="opt' + sel + '" data-valor="' + op.valor + '">' + op.texto + '</button>';
+  });
+  html += '</div><div id="zonaExplicacion"></div></div>';
+  $contenido.innerHTML = html;
+  $contenido.querySelectorAll('.opt').forEach(btn => {
+    btn.addEventListener('click', () => manejarRespuesta(p, btn));
+  });
+}
+function manejarRespuesta(p, btn){
+  if (p.tipo === 'perfil') {
+    respuestas[p.id] = btn.dataset.valor;
+    btn.classList.add('selected');
+    setTimeout(avanzar, 220);
+    return;
+  }
+  if (respondida) return;
+  respondida = true;
+  const eleccion = btn.dataset.valor;
+  const esCorrecta = eleccion === p.correcta;
+  if (esCorrecta) correctas++;
+  detalleConocimiento.push({
+    pregunta: p.id,
+    respuesta: eleccion,
+    correcta: esCorrecta
+  });
+  document.querySelectorAll('#listaOpts .opt').forEach(o => {
+    o.disabled = true;
+    if (o.dataset.valor === p.correcta) o.classList.add('correcta');
+    else if (o.dataset.valor === eleccion) o.classList.add('incorrecta');
+  });
+  const zona = document.getElementById('zonaExplicacion');
+  zona.innerHTML =
+    '<div class="explicacion fade-in">' +
+      '<span class="tag ' + (esCorrecta ? 'ok' : 'no') + '">' +
+        (esCorrecta ? '✓ Correcto' : '✗ Respuesta correcta: la resaltada') +
+      '</span>' +
+      '<p>' + p.explicacion + '</p>' +
+      '<button class="btn-continuar" id="btnContinuar">Continuar</button>' +
+    '</div>';
+  document.getElementById('btnContinuar').addEventListener('click', avanzar);
+  document.getElementById('btnContinuar').scrollIntoView({behavior:'smooth', block:'end'});
+}
+function avanzar(){
+  if (indiceActual === FIN_BLOQUE1) {
+    indiceActual++;
+    mostrar($interludio);
+    return;
+  }
+  if (indiceActual === FIN_BLOQUE2) {
+    respuestas.puntaje_conocimiento = Math.round((correctas / bloque2.length) * 100);
+    respuestas.respuestas_detalle = detalleConocimiento;
+    indiceActual++;
+    mostrar($interludio2);
+    return;
+  }
+  if (indiceActual < flujo.length - 1) {
+    indiceActual++;
+    renderPregunta();
+  } else {
+    prepararCalculadora();
+    mostrar($calculadora);
+  }
+}
+/* ================= CALCULADORA ================= */
+/* Bandas de valor ajustadas al ticket promedio de una ecografía OBSTÉTRICA (suele cotizar más que una abdominal general). Ajustable según mercado real. */
+const MAPA_ESTUDIOS = { '1_5':3, '6_10':8, '11_20':15, '21_40':30, 'mas_40':45 };
+const MAPA_VALOR    = { 'menos_20':15, '20_35':27, '36_50':43, '51_80':65, 'mas_80':95, 'no_sabe':35 };
+const CUOTA_MENSUAL_DIPLOMADO = 120; // cuota mensual vigente del diplomado (matrícula y condiciones de beca se manejan en la conversación comercial, NUNCA aquí)
+function prepararCalculadora(){
+  const estudios = MAPA_ESTUDIOS[respuestas.estudios_potenciales_mes] || 10;
+  const valor    = MAPA_VALOR[respuestas.valor_promedio_eco] || 35;
+  const usaReferencial = respuestas.valor_promedio_eco === 'no_sabe';
+  const mensual = estudios * valor;
+  const anual   = mensual * 12;
+  const retorno = Math.ceil(CUOTA_MENSUAL_DIPLOMADO / valor);
+  respuestas.potencial_mensual = mensual;
+  document.getElementById('calcIntro').textContent =
+    'Según tus respuestas, estimaste una capacidad de ' + estudios + ' ecografías obstétricas mensuales' +
+    (usaReferencial
+      ? ', con un valor referencial de $' + valor + ' por estudio (indicaste no conocer el precio en tu zona).'
+      : ', con un valor promedio de $' + valor + ' por estudio en tu zona.');
+  document.getElementById('calcMensual').textContent = '$' + mensual.toLocaleString('en-US');
+  document.getElementById('calcMensualDetalle').textContent =
+    estudios + ' estudios × $' + valor + ' por estudio, en ingresos brutos.';
+  document.getElementById('calcAnual').textContent = '$' + anual.toLocaleString('en-US');
+  document.getElementById('calcRetorno').textContent = '≈ ' + retorno + ' estudio' + (retorno === 1 ? '' : 's');
+  document.getElementById('calcRetornoDetalle').textContent =
+    'Una cuota mensual de formación equivaldría aproximadamente a ' + retorno +
+    ' ecografía' + (retorno === 1 ? '' : 's') + ' obstétrica' + (retorno === 1 ? '' : 's') + ', sin considerar costos operativos, impuestos, equipo o comisiones.';
+}
+/* ================= LEAD SCORING Y AVATAR ================= */
+function calcularScore(){
+  let score = 0;
+  if (['101_200','201_400','mas_400'].includes(respuestas.pacientes_mes)) score += 3;
+  if (['nuevo_servicio','emprender'].includes(respuestas.objetivo_principal)) score += 3;
+  if (['busca_empleo','mejor_puesto'].includes(respuestas.etapa_profesional)) score += 3;
+  if (respuestas.valor_promedio_eco && respuestas.valor_promedio_eco !== 'no_sabe') score += 2;
+  if (respuestas.objecion_principal === 'costo') score += 2;
+  if (respuestas.objecion_principal === 'inseguridad') score += 1;
+  if (respuestas.objecion_principal === 'falta_tiempo') score -= 2;
+  if (respuestas.ha_visto_ofertas_eco === 'si_varias') score += 1;
+  return score;
+}
+function calcularAvatar(){
+  if (['nuevo_servicio','emprender'].includes(respuestas.objetivo_principal)) return 'emprendedor';
+  if (['busca_empleo','mejor_puesto','postgrado_rural'].includes(respuestas.etapa_profesional) ||
+      ['perfil_laboral','centro_medico'].includes(respuestas.objetivo_principal)) return 'empleable';
+  return 'clinico';
+}
+function calcularNivel(){
+  const p = respuestas.puntaje_conocimiento;
+  if (p <= 33) return 'explorador';
+  if (p <= 50) return 'en_desarrollo';
+  if (p <= 83) return 'clinico_progreso';
+  return 'avanzado';
+}
+/* ================= GUARDADO EN SUPABASE ================= */
+async function guardarProspecto(){
+  const nombre   = document.getElementById('inpNombre').value.trim();
+  const whatsapp = document.getElementById('inpWhatsapp').value.trim();
+  const pais     = document.getElementById('selPais').value;
+  const consent  = document.getElementById('chkConsent').checked;
+  const $error   = document.getElementById('formError');
+  const $btn     = document.getElementById('btnGuardar');
+  if (nombre.length < 3) return mostrarError('Ingresa tu nombre completo.');
+  const digitos = whatsapp.replace(/\D/g, '');
+  if (digitos.length < 8) return mostrarError('Ingresa un número de WhatsApp válido con código de país.');
+  if (!pais) return mostrarError('Selecciona tu país.');
+  if (!consent) return mostrarError('Debes autorizar el envío de tu resultado para continuar.');
+  $error.style.display = 'none';
+  $btn.disabled = true;
+  $btn.textContent = 'Guardando...';
+  if (typeof fbq === 'function') fbq('track', 'Lead');
+  const lead_score = calcularScore();
+  const registro = {
+    nombre: nombre,
+    whatsapp: whatsapp,
+    pais: pais,
+    perfil_profesional: respuestas.perfil_profesional,
+    pacientes_mes: respuestas.pacientes_mes,
+    realiza_ecografias: respuestas.realiza_ecografias,
+    etapa_profesional: respuestas.etapa_profesional,
+    ha_visto_ofertas_eco: respuestas.ha_visto_ofertas_eco,
+    percepcion_ventaja: respuestas.percepcion_ventaja,
+    puntaje_conocimiento: respuestas.puntaje_conocimiento,
+    respuestas_detalle: respuestas.respuestas_detalle,
+    estudios_potenciales_mes: respuestas.estudios_potenciales_mes,
+    valor_promedio_eco: respuestas.valor_promedio_eco,
+    objetivo_principal: respuestas.objetivo_principal,
+    objecion_principal: respuestas.objecion_principal,
+    potencial_mensual: respuestas.potencial_mensual,
+    nivel_resultado: calcularNivel(),
+    avatar: calcularAvatar(),
+    lead_score: lead_score,
+    categoria_lead: lead_score >= 8 ? 'A' : (lead_score >= 4 ? 'B' : 'C'),
+    completo_reto: true,
+    fuente: new URLSearchParams(location.search).get('f') || 'organico'
+  };
+  try {
+    // 1) Intento principal: función del servidor (guarda + genera mensaje de apertura con IA)
+    const res = await fetch('/.netlify/functions/guardar-prospecto-obstetrico', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registro)
+    });
+    if (!res.ok) throw new Error('Función respondió ' + res.status);
+  } catch (err) {
+    console.error('Función falló, usando respaldo directo:', err);
+    // 2) Respaldo: insertar directo a Supabase (sin mensaje de apertura) para no perder el lead
+    try {
+      await fetch(SUPABASE_URL + '/rest/v1/' + TABLA_PROSPECTOS, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(registro)
+      });
+    } catch (err2) {
+      console.error('Respaldo también falló:', err2);
+    }
+  }
+  renderResultado(nombre);
+}
+/* ================= RESULTADO PERSONALIZADO ================= */
+const WHATSAPP_FMC = '593984457607'; // WhatsApp de Mario Plaza - FMC (mismo número del Reto ECO original)
+const CATEGORIAS = {
+  c1: 'Embarazo temprano y viabilidad',
+  c2: 'Screening del primer trimestre',
+  c3: 'Biometría del segundo trimestre',
+  c4: 'Doppler obstétrico',
+  c5: 'Bienestar fetal (perfil biofísico)',
+  c6: 'Evaluación cervical (Sistema Bethesda)'
+};
+const NIVELES = {
+  explorador: {
+    nombre: 'Nivel Explorador',
+    mensaje: 'Tienes interés en la ecografía obstétrica, pero todavía necesitas fortalecer los fundamentos de biometría, Doppler y evaluación del bienestar fetal.',
+    recomendacion: 'Empieza con una formación estructurada, con práctica guiada y protocolos claros de cada trimestre, y evita aprender solamente mediante videos aislados.'
+  },
+  en_desarrollo: {
+    nombre: 'Nivel En Desarrollo',
+    mensaje: 'Reconoces algunos conceptos importantes de la ecografía obstétrica, pero todavía existen vacíos que podrían afectar la interpretación de hallazgos clave como el Doppler o la biometría.',
+    recomendacion: 'Una formación ordenada, de lo básico a lo clínico, te permitiría cerrar esos vacíos con seguridad y avanzar más rápido de lo que imaginas.'
+  },
+  clinico_progreso: {
+    nombre: 'Nivel Clínico en Progreso',
+    mensaje: 'Posees una base favorable para avanzar hacia una aplicación más ordenada de la ecografía obstétrica en la práctica clínica.',
+    recomendacion: 'Tu siguiente paso natural es sistematizar: protocolos por trimestre, Doppler obstétrico, evaluación cervical y práctica supervisada.'
+  },
+  avanzado: {
+    nombre: 'Nivel Avanzado',
+    mensaje: 'Tienes una base sólida en ecografía obstétrica. Tu siguiente paso debería ser perfeccionar Doppler, ecografía 5D, evaluación cervical y práctica supervisada.',
+    recomendacion: 'Con una formación formal podrías consolidar y certificar lo que ya sabes, y llevar la atención materno-fetal a un estándar profesional en tu práctica.'
+  }
+};
+const AVATAR_TEXTO = {
+  emprendedor: ' Además, tu objetivo apunta a incorporar un nuevo servicio: según tu propio cálculo, una formación estructurada en ecografía obstétrica se recuperaría en pocas semanas de trabajo.',
+  empleable: ' Además, tu perfil apunta a crecer en el mercado laboral: el manejo de ecografía obstétrica y Doppler es una de las competencias más valoradas hoy en vacantes de salud materna.',
+  clinico: ' Además, tu objetivo es fortalecer tu criterio clínico: la ecografía obstétrica estructurada eleva de inmediato la seguridad diagnóstica y la prevención de riesgos como la preeclampsia.'
+};
+function renderResultado(nombre){
+  const nivel = NIVELES[calcularNivel()];
+  const primerNombre = nombre.split(' ')[0];
+  document.getElementById('resNivel').textContent = nivel.nombre;
+  document.getElementById('resSaludo').textContent =
+    primerNombre + ', este es tu punto de partida según tu evaluación de hoy.';
+  const puntaje = respuestas.puntaje_conocimiento;
+  document.getElementById('resPuntaje').textContent = puntaje + '%';
+  setTimeout(() => {
+    document.getElementById('resBarra').style.width = Math.max(puntaje, 4) + '%';
+  }, 150);
+  const $fort = document.getElementById('resFortalezas');
+  const $mej  = document.getElementById('resMejoras');
+  $fort.innerHTML = '';
+  $mej.innerHTML = '';
+  let nFort = 0, nMej = 0;
+  detalleConocimiento.forEach(d => {
+    const cat = CATEGORIAS[d.pregunta] || d.pregunta;
+    if (d.correcta) {
+      $fort.innerHTML += '<li><span class="mark ok">✓</span>' + cat + '</li>';
+      nFort++;
+    } else {
+      $mej.innerHTML += '<li><span class="mark mejora">△</span>' + cat + '</li>';
+      nMej++;
+    }
+  });
+  document.getElementById('resFortalezasSec').style.display = nFort ? '' : 'none';
+  document.getElementById('resMejorasSec').style.display = nMej ? '' : 'none';
+  document.getElementById('resPotencial').textContent =
+    '$' + (respuestas.potencial_mensual || 0).toLocaleString('en-US');
+  document.getElementById('resPotencialDetalle').textContent = nivel.mensaje;
+  document.getElementById('resRecomendacion').textContent =
+    nivel.recomendacion + (AVATAR_TEXTO[calcularAvatar()] || '');
+  const msg = 'Hola, soy ' + nombre + '. Completé el Reto ECO de Ecografía Obstétrica de FMC. Mi resultado: ' +
+    nivel.nombre + ' (' + puntaje + '% de conocimiento). Quiero recibir mi reporte completo y la guía de inicio.';
+  document.getElementById('btnWhatsapp').href =
+    'https://wa.me/' + WHATSAPP_FMC + '?text=' + encodeURIComponent(msg);
+  mostrar($resultado);
+}
+function mostrarError(msg){
+  const $error = document.getElementById('formError');
+  $error.textContent = msg;
+  $error.style.display = 'block';
+  return false;
+}
+</script>
+</body>
+</html>
