@@ -861,8 +861,9 @@ document.getElementById('selPais').addEventListener('change', function(){
   if (actual === '' || /^\+\d{1,4}\s?$/.test(actual)) {
     $wa.value = prefijo ? prefijo + ' ' : '';
   } else if (prefijo && !actual.startsWith('+')) {
-    // el usuario ya escribió su número local sin prefijo: anteponerlo
-    $wa.value = prefijo + ' ' + actual;
+    // el usuario ya escribió su número local sin prefijo: anteponerlo (quitando el 0 inicial si lo tiene)
+    const local = actual.replace(/^0+/, '');
+    $wa.value = prefijo + ' ' + local;
   }
   $wa.placeholder = prefijo ? prefijo + ' 99 999 9999' : 'Incluye tu código de país';
 });
@@ -1051,7 +1052,8 @@ async function guardarProspecto(){
   // validaciones
   if (nombre.length < 3) return mostrarError('Ingresa tu nombre completo.');
   const digitos = whatsapp.replace(/\D/g, '');
-  if (digitos.length < 8) return mostrarError('Ingresa un número de WhatsApp válido con código de país.');
+  if (digitos.length < 8 || digitos.length > 13) return mostrarError('Revisa tu número de WhatsApp: la cantidad de dígitos no parece correcta.');
+  if (/^(\d)\1{5,}$/.test(digitos) || /0123456789|123456789|999999999/.test(digitos)) return mostrarError('Ingresa un número de WhatsApp real, no uno de prueba.');
   if (!pais) return mostrarError('Selecciona tu país.');
   if (!consent) return mostrarError('Debes autorizar el envío de tu resultado para continuar.');
 

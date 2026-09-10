@@ -84,6 +84,17 @@
   }
   .filtro.activo{border-color:var(--echo);color:var(--echo)}
 
+  /* ===== BUSCADOR ===== */
+  .buscador{margin-bottom:14px}
+  .buscador input{
+    width:100%;padding:13px 14px;border-radius:12px;
+    background:var(--card);border:1.5px solid var(--border);
+    color:var(--bone);font-size:14.5px;font-family:'Inter',sans-serif;
+  }
+  .buscador input:focus{outline:none;border-color:var(--echo)}
+  .buscador input::placeholder{color:var(--gray)}
+  .conteo{font-size:12px;color:var(--gray);margin:-8px 0 12px}
+
   /* ===== TARJETA DE LEAD ===== */
   .lead{
     background:var(--card);border:1px solid var(--border);
@@ -160,7 +171,10 @@
       <h1>Leads Reto ECO</h1>
       <div class="sub" id="subFecha"></div>
     </div>
-    <button class="btn-mini" id="btnRefrescar">↻ Actualizar</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn-mini" id="btnDescargar">⬇ CSV</button>
+      <button class="btn-mini" id="btnRefrescar">↻ Actualizar</button>
+    </div>
   </div>
 
   <div class="stats">
@@ -170,6 +184,10 @@
     <div class="stat c"><div class="n" id="stC">0</div><div class="l">Cat. C</div></div>
   </div>
 
+  <div class="buscador">
+    <input type="text" id="inpBuscar" placeholder="Buscar por nombre, WhatsApp, país, objetivo...">
+  </div>
+
   <div class="filtros" id="filtros">
     <button class="filtro activo" data-f="todos">Todos</button>
     <button class="filtro" data-f="A">Prioridad A</button>
@@ -177,6 +195,8 @@
     <button class="filtro" data-f="C">Prioridad C</button>
     <button class="filtro" data-f="nuevo">Sin contactar</button>
   </div>
+
+  <div class="conteo" id="conteo"></div>
 
   <div id="lista"><div class="cargando">Cargando leads...</div></div>
 </div>
@@ -188,6 +208,16 @@ const FN = '/.netlify/functions/leads';
 let PIN = sessionStorage.getItem('pin_reto_eco') || '';
 let LEADS = [];
 let FILTRO = 'todos';
+let BUSQUEDA = '';
+
+const COLUMNAS_CSV = [
+  'id','created_at','nombre','whatsapp','email','pais','perfil_profesional','pacientes_mes',
+  'realiza_ecografias','etapa_profesional','puntaje_conocimiento','ha_visto_ofertas_eco',
+  'percepcion_ventaja','estudios_potenciales_mes','valor_promedio_eco','objetivo_principal',
+  'objecion_principal','potencial_mensual','nivel_resultado','avatar','lead_score','categoria_lead',
+  'estado','asesor_asignado','mensaje_apertura','reporte_medico','notas','completo_reto',
+  'pantalla_abandono','fuente','respuestas_detalle'
+];
 
 const T = {
   perfil: { general:'Médico general', rural:'Médico rural', residente:'Residente',
@@ -206,6 +236,11 @@ const T = {
 document.getElementById('btnEntrar').addEventListener('click', entrar);
 document.getElementById('inpPIN').addEventListener('keyup', e => { if (e.key === 'Enter') entrar(); });
 document.getElementById('btnRefrescar').addEventListener('click', cargarLeads);
+document.getElementById('btnDescargar').addEventListener('click', descargarCSV);
+document.getElementById('inpBuscar').addEventListener('input', e => {
+  BUSQUEDA = normalizar(e.target.value);
+  render();
+});
 document.querySelectorAll('.filtro').forEach(f => {
   f.addEventListener('click', () => {
     document.querySelectorAll('.filtro').forEach(x => x.classList.remove('activo'));
@@ -214,6 +249,10 @@ document.querySelectorAll('.filtro').forEach(f => {
     render();
   });
 });
+
+function normalizar(s){
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
 
 if (PIN) { verificarYEntrar(); }
 
@@ -256,21 +295,24 @@ async function cargarLeads(){
   render();
 }
 
-function render(){
-  const hoy = new Date();
-  document.getElementById('subFecha').textContent =
-    hoy.toLocaleDateString('es-EC', { weekday:'long', day:'numeric', month:'long' });
-
-  document.getElementById('stTotal').textContent = LEADS.length;
-  document.getElementById('stA').textContent = LEADS.filter(l => l.categoria_lead === 'A').length;
-  document.getElementById('stB').textContent = LEADS.filter(l => l.categoria_lead === 'B').length;
-  document.getElementById('stC').textContent = LEADS.filter(l => l.categoria_lead === 'C').length;
-
+function listaFiltrada(){
   let lista = [...LEADS];
   if (FILTRO === 'A' || FILTRO === 'B' || FILTRO === 'C') {
     lista = lista.filter(l => l.categoria_lead === FILTRO);
   } else if (FILTRO === 'nuevo') {
     lista = lista.filter(l => (l.estado || 'nuevo') === 'nuevo');
+  }
+
+  if (BUSQUEDA) {
+    lista = lista.filter(l => {
+      const campo = normalizar([
+        l.nombre, l.whatsapp, l.pais,
+        T.perfil[l.perfil_profesional], T.avatar[l.avatar],
+        T.objetivo[l.objetivo_principal], T.objecion[l.objecion_principal],
+        l.estado
+      ].join(' '));
+      return campo.includes(BUSQUEDA);
+    });
   }
 
   // orden: categoría A primero, luego score, luego más recientes
@@ -282,10 +324,28 @@ function render(){
     if (s !== 0) return s;
     return new Date(y.created_at) - new Date(x.created_at);
   });
+  return lista;
+}
+
+function render(){
+  const hoy = new Date();
+  document.getElementById('subFecha').textContent =
+    hoy.toLocaleDateString('es-EC', { weekday:'long', day:'numeric', month:'long' });
+
+  document.getElementById('stTotal').textContent = LEADS.length;
+  document.getElementById('stA').textContent = LEADS.filter(l => l.categoria_lead === 'A').length;
+  document.getElementById('stB').textContent = LEADS.filter(l => l.categoria_lead === 'B').length;
+  document.getElementById('stC').textContent = LEADS.filter(l => l.categoria_lead === 'C').length;
+
+  const lista = listaFiltrada();
+  document.getElementById('conteo').textContent =
+    'Mostrando ' + lista.length + ' de ' + LEADS.length + ' leads';
 
   const $l = document.getElementById('lista');
   if (!lista.length) {
-    $l.innerHTML = '<div class="vacio-lista">No hay leads en este filtro todavía.</div>';
+    $l.innerHTML = '<div class="vacio-lista">' +
+      (BUSQUEDA ? 'Ningún lead coincide con tu búsqueda.' : 'No hay leads en este filtro todavía.') +
+      '</div>';
     return;
   }
 
@@ -373,6 +433,31 @@ async function cambiarEstado(id, estado){
 
 function esc(s){
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function celdaCSV(valor){
+  if (valor === null || valor === undefined) return '';
+  let s = typeof valor === 'object' ? JSON.stringify(valor) : String(valor);
+  if (/[",\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function descargarCSV(){
+  // exporta lo que está visible ahora mismo (respeta el filtro y la búsqueda activos)
+  const filas = listaFiltrada();
+  if (!filas.length) return;
+  const encabezado = COLUMNAS_CSV.join(',');
+  const cuerpo = filas.map(l => COLUMNAS_CSV.map(c => celdaCSV(l[c])).join(',')).join('\n');
+  const csv = '﻿' + encabezado + '\n' + cuerpo; // BOM: para que Excel muestre bien acentos/ñ
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'leads_reto_eco_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 </script>
 
