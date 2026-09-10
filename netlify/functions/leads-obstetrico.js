@@ -1,4 +1,3 @@
-
 // Función Netlify: acceso seguro a los leads del Reto ECO Materno-Fetal (Ecografía Obstétrica)
 // para el panel. Espejo de leads.js, apuntando a la tabla prospectos_eco_obstetrico.
 // Protegida con el mismo PIN del panel original (soporta varios PINs separados por comas).
@@ -21,7 +20,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'GET') {
     try {
       const r = await fetch(
-        SUPABASE_URL + '/rest/v1/prospectos_eco_obstetrico?select=*&order=created_at.desc&limit=300',
+        SUPABASE_URL + '/rest/v1/prospectos_eco_obstetrico?select=*&order=created_at.desc&limit=2000',
         { headers: cab }
       );
       if (!r.ok) {
