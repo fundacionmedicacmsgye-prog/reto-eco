@@ -23,7 +23,7 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'GET') {
     try {
       const r = await fetch(
-        SUPABASE_URL + '/rest/v1/prospectos_eco?select=*&order=created_at.desc&limit=300',
+        SUPABASE_URL + '/rest/v1/prospectos_eco?select=*&order=created_at.desc&limit=2000',
         { headers: cab }
       );
       if (!r.ok) {
