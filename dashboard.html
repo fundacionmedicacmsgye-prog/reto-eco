@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Reto ECO | FMC</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --scan-deep:#0B1520;
+    --scan-mid:#122334;
+    --echo:#6FE3D4;
+    --echo-dim:#2C7A70;
+    --warm:#FFB65C;
+    --coral:#FF8A7A;
+    --violet:#B79CFF;
+    --azul:#7FB8FF;
+    --bone:#F2F5F7;
+    --gray:#93A5B3;
+    --card:#0F1E2D;
+    --border:rgba(147,165,179,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--scan-deep);color:var(--bone);
+    min-height:100vh;min-height:100dvh;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px 60px}
+  .hidden{display:none!important}
+
+  h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.3px}
+  h2{font-family:'Manrope',sans-serif;font-weight:800;font-size:15.5px;margin:0 0 12px}
+  .sub{font-size:13px;color:var(--gray);margin-top:4px}
+
+  /* ===== PIN ===== */
+  .pin-box{max-width:340px;margin:18vh auto 0;text-align:center}
+  .pin-box h1{margin-bottom:6px}
+  .pin-box p{font-size:13.5px;color:var(--gray);margin-bottom:22px}
+  .pin-box input{
+    width:100%;padding:16px;text-align:center;
+    font-size:24px;letter-spacing:.4em;font-weight:700;
+    background:var(--card);border:1.5px solid var(--border);
+    border-radius:13px;color:var(--bone);margin-bottom:14px;
+  }
+  .pin-box input:focus{outline:none;border-color:var(--echo)}
+  .btn{
+    display:block;width:100%;padding:15px;border:none;border-radius:13px;
+    background:linear-gradient(135deg,var(--echo) 0%,#4FC7B8 100%);
+    color:#062019;font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;
+    cursor:pointer;
+  }
+  .btn:disabled{opacity:.55}
+  .pin-error{color:var(--coral);font-size:13px;margin-top:12px;display:none}
+
+  /* ===== BARRA SUPERIOR ===== */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap}
+  .btn-mini{
+    background:var(--card);border:1px solid var(--border);color:var(--gray);
+    padding:9px 13px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-mini.activo{border-color:var(--echo);color:var(--echo)}
+  .enlaces{display:flex;gap:8px;flex-wrap:wrap}
+
+  /* ===== TABS (funnel / periodo) ===== */
+  .tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+  .tab{
+    background:var(--card);border:1.5px solid var(--border);color:var(--gray);
+    padding:8px 14px;border-radius:99px;font-size:13px;font-weight:600;
+    cursor:pointer;white-space:nowrap;flex:none;
+  }
+  .tab.activo{border-color:var(--echo);color:var(--echo)}
+
+  /* ===== KPIs ===== */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+  @media (min-width:600px){ .stats{grid-template-columns:repeat(6,1fr)} }
+  .stat{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:12px 8px;text-align:center;
+  }
+  .stat .n{font-family:'Manrope',sans-serif;font-weight:800;font-size:19px}
+  .stat .l{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  .stat.a .n{color:var(--echo)}
+  .stat.m .n{color:#38D67A}
+
+  /* ===== PANELES / TARJETAS ===== */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:15px;padding:16px;margin-bottom:16px;
+  }
+  .chart-scroll{overflow-x:auto}
+  .chart-box{position:relative;height:240px}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--border)}
+  th{color:var(--gray);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  td b{color:var(--bone)}
+  tr:last-child td{border-bottom:none}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+
+  .cargando{text-align:center;color:var(--gray);padding:40px}
+  .leyenda{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:10px;font-size:12px;color:var(--gray)}
+  .leyenda span{display:inline-flex;align-items:center;gap:6px}
+  .leyenda i{width:10px;height:10px;border-radius:3px;display:inline-block}
+</style>
+</head>
+<body>
+
+<!-- ===== PANTALLA PIN ===== -->
+<div class="pin-box" id="vistaPIN">
+  <h1>Dashboard Reto ECO</h1>
+  <p>FMC · Acceso restringido</p>
+  <input type="password" id="inpPIN" inputmode="numeric" maxlength="8" placeholder="••••">
+  <button class="btn" id="btnEntrar">Entrar</button>
+  <p class="pin-error" id="pinError">PIN incorrecto. Intenta de nuevo.</p>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="wrap hidden" id="vistaPanel">
+  <div class="topbar">
+    <div>
+      <h1>Dashboard Reto ECO</h1>
+      <div class="sub" id="subFecha"></div>
+    </div>
+    <div class="enlaces">
+      <a class="btn-mini" href="panel.html">Panel general →</a>
+      <a class="btn-mini" href="panel-obstetrico.html">Panel obstétrico →</a>
+      <button class="btn-mini" id="btnRefrescar">↻ Actualizar</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabsFunnel">
+    <button class="tab activo" data-fn="todos">Ambos retos</button>
+    <button class="tab" data-fn="general">Reto ECO general</button>
+    <button class="tab" data-fn="obstetrico">Reto ECO Obstétrico</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Total leads</div></div>
+    <div class="stat"><div class="n" id="stHoy">0</div><div class="l">Hoy</div></div>
+    <div class="stat"><div class="n" id="stSemana">0</div><div class="l">Esta semana</div></div>
+    <div class="stat"><div class="n" id="stMes">0</div><div class="l">Este mes</div></div>
+    <div class="stat a"><div class="n" id="stA">0</div><div class="l">Categoría A</div></div>
+    <div class="stat m"><div class="n" id="stMatriculados">0</div><div class="l">Matriculados</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Leads por periodo, según fuente de tráfico</h2>
+    <div class="tabs" id="tabsPeriodo">
+      <button class="tab" data-g="dia">Día</button>
+      <button class="tab" data-g="semana">Semana</button>
+      <button class="tab activo" data-g="mes">Mes</button>
+      <button class="tab" data-g="anio">Año</button>
+    </div>
+    <div class="chart-scroll"><div class="chart-box" id="cajaChartFuente"><canvas id="chartFuente"></canvas></div></div>
+    <div class="leyenda" id="leyendaFuente"></div>
+  </div>
+
+  <div class="card">
+    <h2>Leads por periodo, según calidad (categoría)</h2>
+    <div class="chart-scroll"><div class="chart-box" id="cajaChartCategoria"><canvas id="chartCategoria"></canvas></div></div>
+  </div>
+
+  <div class="card">
+    <h2>¿Cómo va la publicidad? — resumen por fuente (todo el histórico del filtro actual)</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>Fuente</th><th class="num">Leads</th><th class="num">% del total</th>
+          <th class="num">Cat. A</th><th class="num">Matriculados</th><th class="num">Conversión</th>
+        </tr></thead>
+        <tbody id="tablaFuente"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Resumen por reto</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>Reto</th><th class="num">Total</th><th class="num">A</th><th class="num">B</th><th class="num">C</th>
+          <th class="num">Matriculados</th><th class="num">Conversión</th>
+        </tr></thead>
+        <tbody id="tablaFunnel"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const AJUSTE_HORAS_GYE = 5; // Ecuador = UTC-5 todo el año, sin horario de verano
+let PIN = sessionStorage.getItem('pin_reto_eco') || '';
+let LEADS = []; // combinado, cada uno con _funnel: 'general' | 'obstetrico'
+let FUNNEL = 'todos';
+let GRANULARIDAD = 'mes';
+
+const COLOR_FUENTE = {
+  organico:   '#6FE3D4',
+  meta_ads:   '#FFB65C',
+  whatsapp:   '#38D67A',
+  whatsapp1:  '#25B864',
+  whatsapp2:  '#1C9E52',
+  email:      '#7FB8FF',
+  reel:       '#B79CFF',
+  otro:       '#93A5B3'
+};
+const NOMBRE_FUENTE = {
+  organico:'Orgánico', meta_ads:'Meta Ads', whatsapp:'WhatsApp (difusión)',
+  whatsapp1:'WhatsApp test A', whatsapp2:'WhatsApp test B', email:'Email (Mail Relay)',
+  reel:'Reel', otro:'Otro / sin dato'
+};
+const COLOR_CAT = { A:'#6FE3D4', B:'#FFB65C', C:'#93A5B3' };
+
+let chartFuente = null, chartCategoria = null;
+
+document.getElementById('btnEntrar').addEventListener('click', entrar);
+document.getElementById('inpPIN').addEventListener('keyup', e => { if (e.key === 'Enter') entrar(); });
+document.getElementById('btnRefrescar').addEventListener('click', cargarTodo);
+
+document.querySelectorAll('#tabsFunnel .tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('#tabsFunnel .tab').forEach(x => x.classList.remove('activo'));
+    t.classList.add('activo');
+    FUNNEL = t.dataset.fn;
+    render();
+  });
+});
+document.querySelectorAll('#tabsPeriodo .tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('#tabsPeriodo .tab').forEach(x => x.classList.remove('activo'));
+    t.classList.add('activo');
+    GRANULARIDAD = t.dataset.g;
+    render();
+  });
+});
+
+if (PIN) { verificarYEntrar(); }
+
+async function entrar(){
+  PIN = document.getElementById('inpPIN').value.trim();
+  if (!PIN) return;
+  verificarYEntrar();
+}
+
+async function verificarYEntrar(){
+  const btn = document.getElementById('btnEntrar');
+  btn.disabled = true; btn.textContent = 'Verificando...';
+  try {
+    const ok = await cargarTodo();
+    if (ok) {
+      sessionStorage.setItem('pin_reto_eco', PIN);
+      document.getElementById('vistaPIN').classList.add('hidden');
+      document.getElementById('vistaPanel').classList.remove('hidden');
+    } else {
+      document.getElementById('pinError').textContent = 'PIN incorrecto. Intenta de nuevo.';
+      document.getElementById('pinError').style.display = 'block';
+      sessionStorage.removeItem('pin_reto_eco');
+    }
+  } catch (e) {
+    document.getElementById('pinError').textContent = 'Error de conexión. Intenta de nuevo.';
+    document.getElementById('pinError').style.display = 'block';
+  }
+  btn.disabled = false; btn.textContent = 'Entrar';
+}
+
+async function cargarTodo(){
+  try {
+    const [rGeneral, rObs] = await Promise.all([
+      fetch('/.netlify/functions/leads', { headers: { 'x-pin': PIN } }),
+      fetch('/.netlify/functions/leads-obstetrico', { headers: { 'x-pin': PIN } })
+    ]);
+    if (rGeneral.status === 401 || rObs.status === 401) return false;
+    const dGeneral = await rGeneral.json();
+    const dObs = await rObs.json();
+    const general = (dGeneral.leads || []).map(l => ({ ...l, _funnel: 'general' }));
+    const obstetrico = (dObs.leads || []).map(l => ({ ...l, _funnel: 'obstetrico' }));
+    LEADS = general.concat(obstetrico);
+    if (document.getElementById('vistaPanel').classList.contains('hidden') === false) render();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function leadsFiltrados(){
+  if (FUNNEL === 'todos') return LEADS;
+  return LEADS.filter(l => l._funnel === FUNNEL);
+}
+
+function aGuayaquil(fechaISO){
+  return new Date(new Date(fechaISO).getTime() - AJUSTE_HORAS_GYE * 3600 * 1000);
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function claveBucket(fechaISO, granularidad){
+  const g = aGuayaquil(fechaISO);
+  const y = g.getUTCFullYear(), m = g.getUTCMonth(), d = g.getUTCDate();
+  if (granularidad === 'dia') return `${y}-${pad(m+1)}-${pad(d)}`;
+  if (granularidad === 'mes') return `${y}-${pad(m+1)}`;
+  if (granularidad === 'anio') return `${String(y)}`;
+  // semana: lunes de esa semana
+  const dt = new Date(Date.UTC(y, m, d));
+  const diaSemana = (dt.getUTCDay() + 6) % 7; // 0 = lunes
+  dt.setUTCDate(dt.getUTCDate() - diaSemana);
+  return `${dt.getUTCFullYear()}-${pad(dt.getUTCMonth()+1)}-${pad(dt.getUTCDate())}`;
+}
+
+function etiquetaBucket(clave, granularidad){
+  if (granularidad === 'dia') {
+    const [y,m,d] = clave.split('-');
+    return `${d}/${m}`;
+  }
+  if (granularidad === 'mes') {
+    const [y,m] = clave.split('-');
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return `${meses[parseInt(m,10)-1]} ${y.slice(2)}`;
+  }
+  if (granularidad === 'anio') return clave;
+  // semana: etiqueta = "sem. DD/MM"
+  const [y,m,d] = clave.split('-');
+  return `sem. ${d}/${m}`;
+}
+
+const LIMITE_BUCKETS = { dia:30, semana:16, mes:12, anio:6 };
+
+function inicioDeHoyGuayaquilUTC(){
+  const ahora = new Date();
+  const local = new Date(ahora.getTime() - AJUSTE_HORAS_GYE*3600*1000);
+  local.setUTCHours(0,0,0,0);
+  return new Date(local.getTime() + AJUSTE_HORAS_GYE*3600*1000);
+}
+function inicioDeSemanaGuayaquilUTC(){
+  const ahora = new Date();
+  const local = new Date(ahora.getTime() - AJUSTE_HORAS_GYE*3600*1000);
+  const diaSemana = (local.getUTCDay() + 6) % 7;
+  local.setUTCDate(local.getUTCDate() - diaSemana);
+  local.setUTCHours(0,0,0,0);
+  return new Date(local.getTime() + AJUSTE_HORAS_GYE*3600*1000);
+}
+function inicioDeMesGuayaquilUTC(){
+  const ahora = new Date();
+  const local = new Date(ahora.getTime() - AJUSTE_HORAS_GYE*3600*1000);
+  local.setUTCDate(1);
+  local.setUTCHours(0,0,0,0);
+  return new Date(local.getTime() + AJUSTE_HORAS_GYE*3600*1000);
+}
+
+function render(){
+  const hoy = new Date();
+  document.getElementById('subFecha').textContent =
+    'Actualizado ' + hoy.toLocaleDateString('es-EC', { weekday:'long', day:'numeric', month:'long' }) +
+    ' · ' + hoy.toLocaleTimeString('es-EC', { hour:'2-digit', minute:'2-digit' });
+
+  const lista = leadsFiltrados();
+  const inicioHoy = inicioDeHoyGuayaquilUTC();
+  const inicioSemana = inicioDeSemanaGuayaquilUTC();
+  const inicioMes = inicioDeMesGuayaquilUTC();
+
+  document.getElementById('stTotal').textContent = lista.length;
+  document.getElementById('stHoy').textContent = lista.filter(l => new Date(l.created_at) >= inicioHoy).length;
+  document.getElementById('stSemana').textContent = lista.filter(l => new Date(l.created_at) >= inicioSemana).length;
+  document.getElementById('stMes').textContent = lista.filter(l => new Date(l.created_at) >= inicioMes).length;
+  document.getElementById('stA').textContent = lista.filter(l => l.categoria_lead === 'A').length;
+  document.getElementById('stMatriculados').textContent = lista.filter(l => l.estado === 'matriculado').length;
+
+  renderChartFuente(lista);
+  renderChartCategoria(lista);
+  renderTablaFuente(lista);
+  renderTablaFunnel();
+}
+
+function bucketsOrdenados(lista, granularidad){
+  const claves = new Set(lista.map(l => claveBucket(l.created_at, granularidad)));
+  const ordenadas = [...claves].sort();
+  const limite = LIMITE_BUCKETS[granularidad] || 12;
+  return ordenadas.slice(-limite);
+}
+
+function renderChartFuente(lista){
+  const buckets = bucketsOrdenados(lista, GRANULARIDAD);
+  const fuentesPresentes = [...new Set(lista.map(l => l.fuente || 'organico'))];
+  // aseguremos un orden consistente: primero las conocidas, luego las demás
+  const ordenConocido = Object.keys(NOMBRE_FUENTE);
+  fuentesPresentes.sort((a,b) => ordenConocido.indexOf(a) - ordenConocido.indexOf(b));
+
+  const datasets = fuentesPresentes.map(fuente => ({
+    label: NOMBRE_FUENTE[fuente] || fuente,
+    backgroundColor: COLOR_FUENTE[fuente] || COLOR_FUENTE.otro,
+    data: buckets.map(b => lista.filter(l => claveBucket(l.created_at, GRANULARIDAD) === b && (l.fuente || 'organico') === fuente).length),
+    stack: 's1'
+  }));
+
+  const ctx = document.getElementById('chartFuente');
+  // ancho mínimo para que no se aplasten las barras cuando hay muchos periodos
+  document.getElementById('cajaChartFuente').style.minWidth = Math.max(320, buckets.length * 42) + 'px';
+
+  if (chartFuente) chartFuente.destroy();
+  chartFuente = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: buckets.map(b => etiquetaBucket(b, GRANULARIDAD)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, ticks: { color: '#93A5B3' }, grid: { color: 'rgba(147,165,179,.12)' } },
+        y: { stacked: true, beginAtZero: true, ticks: { color: '#93A5B3', precision: 0 }, grid: { color: 'rgba(147,165,179,.12)' } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  document.getElementById('leyendaFuente').innerHTML = fuentesPresentes.map(f =>
+    `<span><i style="background:${COLOR_FUENTE[f] || COLOR_FUENTE.otro}"></i>${NOMBRE_FUENTE[f] || f}</span>`
+  ).join('');
+}
+
+function renderChartCategoria(lista){
+  const buckets = bucketsOrdenados(lista, GRANULARIDAD);
+  const datasets = ['A','B','C'].map(cat => ({
+    label: 'Categoría ' + cat,
+    backgroundColor: COLOR_CAT[cat],
+    data: buckets.map(b => lista.filter(l => claveBucket(l.created_at, GRANULARIDAD) === b && l.categoria_lead === cat).length),
+    stack: 's1'
+  }));
+
+  document.getElementById('cajaChartCategoria').style.minWidth = Math.max(320, buckets.length * 42) + 'px';
+
+  if (chartCategoria) chartCategoria.destroy();
+  chartCategoria = new Chart(document.getElementById('chartCategoria'), {
+    type: 'bar',
+    data: { labels: buckets.map(b => etiquetaBucket(b, GRANULARIDAD)), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, ticks: { color: '#93A5B3' }, grid: { color: 'rgba(147,165,179,.12)' } },
+        y: { stacked: true, beginAtZero: true, ticks: { color: '#93A5B3', precision: 0 }, grid: { color: 'rgba(147,165,179,.12)' } }
+      },
+      plugins: { legend: { labels: { color: '#F2F5F7' } } }
+    }
+  });
+}
+
+function renderTablaFuente(lista){
+  const total = lista.length || 1;
+  const porFuente = {};
+  lista.forEach(l => {
+    const f = l.fuente || 'organico';
+    if (!porFuente[f]) porFuente[f] = { total:0, a:0, matriculados:0 };
+    porFuente[f].total++;
+    if (l.categoria_lead === 'A') porFuente[f].a++;
+    if (l.estado === 'matriculado') porFuente[f].matriculados++;
+  });
+  const filas = Object.entries(porFuente).sort((a,b) => b[1].total - a[1].total);
+  document.getElementById('tablaFuente').innerHTML = filas.length ? filas.map(([f, s]) => `
+    <tr>
+      <td><b>${NOMBRE_FUENTE[f] || f}</b></td>
+      <td class="num">${s.total}</td>
+      <td class="num">${((s.total/total)*100).toFixed(0)}%</td>
+      <td class="num">${s.a}</td>
+      <td class="num">${s.matriculados}</td>
+      <td class="num">${s.total ? ((s.matriculados/s.total)*100).toFixed(1) : '0.0'}%</td>
+    </tr>`).join('') : '<tr><td colspan="6" style="color:#93A5B3;text-align:center">Sin datos todavía.</td></tr>';
+}
+
+function renderTablaFunnel(){
+  const grupos = [
+    ['general', 'Reto ECO (general)'],
+    ['obstetrico', 'Reto ECO Obstétrico']
+  ];
+  document.getElementById('tablaFunnel').innerHTML = grupos.map(([clave, nombre]) => {
+    const l = LEADS.filter(x => x._funnel === clave);
+    const a = l.filter(x => x.categoria_lead === 'A').length;
+    const b = l.filter(x => x.categoria_lead === 'B').length;
+    const c = l.filter(x => x.categoria_lead === 'C').length;
+    const m = l.filter(x => x.estado === 'matriculado').length;
+    const conv = l.length ? ((m/l.length)*100).toFixed(1) : '0.0';
+    return `<tr>
+      <td><b>${nombre}</b></td>
+      <td class="num">${l.length}</td>
+      <td class="num">${a}</td>
+      <td class="num">${b}</td>
+      <td class="num">${c}</td>
+      <td class="num">${m}</td>
+      <td class="num">${conv}%</td>
+    </tr>`;
+  }).join('');
+}
+</script>
+
+</body>
+</html>

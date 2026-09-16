@@ -1,0 +1,8 @@
+# Configuración de Netlify Functions programadas (scheduled functions).
+# No afecta el resto de la configuración del sitio (carpeta de funciones, etc.),
+# que sigue tomándose de los ajustes ya configurados en el panel de Netlify.
+
+[functions."reporte-diario"]
+  # Cron en UTC. "0 1 * * *" = 01:00 UTC = 20:00 (8pm) hora de Guayaquil/Ecuador,
+  # que es UTC-5 todo el año (sin horario de verano).
+  schedule = "0 1 * * *"
