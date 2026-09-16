@@ -83,6 +83,7 @@
     cursor:pointer;white-space:nowrap;flex:none;
   }
   .filtro.activo{border-color:var(--echo);color:var(--echo)}
+  .filtro.alerta.activo{border-color:var(--coral);color:var(--coral)}
 
   /* ===== BUSCADOR ===== */
   .buscador{margin-bottom:14px}
@@ -110,6 +111,13 @@
   .badge.A{color:var(--echo);border-color:var(--echo)}
   .badge.B{color:var(--warm);border-color:var(--warm)}
   .badge.C{color:var(--gray);border-color:var(--gray)}
+
+  .lead.malo{border-color:rgba(255,138,122,.5);background:linear-gradient(180deg,rgba(255,138,122,.06),var(--card) 40px)}
+  .aviso-malo{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+    color:var(--coral);background:rgba(255,138,122,.12);border:1px solid rgba(255,138,122,.4);
+    padding:4px 9px;border-radius:99px;margin-bottom:8px;
+  }
 
   .lead-datos{
     display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;
@@ -151,6 +159,45 @@
     background:var(--echo);color:#062019;font-weight:700;font-size:14px;
     padding:12px 22px;border-radius:99px;display:none;z-index:50;
   }
+
+  /* ===== BITÁCORA ===== */
+  .bitacora{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+  .bitacora-titulo{font-size:12px;color:var(--gray);font-weight:600;margin-bottom:6px}
+  .bitacora-log{max-height:130px;overflow:auto;margin-bottom:8px}
+  .bitacora-log.vacio{color:var(--gray);font-style:italic;font-size:12.5px}
+  .bitacora-entrada{
+    font-size:12.5px;line-height:1.5;padding:6px 0;border-bottom:1px dashed var(--border);
+  }
+  .bitacora-entrada:last-child{border-bottom:none}
+  .bitacora-entrada .sello{color:var(--echo);font-weight:700;margin-right:5px}
+  .bitacora-nueva{display:flex;gap:6px}
+  .bitacora-nueva input{
+    flex:1;padding:10px 12px;border-radius:10px;
+    background:var(--scan-mid);border:1.5px solid var(--border);
+    color:var(--bone);font-size:13px;
+  }
+  .bitacora-nueva input:focus{outline:none;border-color:var(--echo)}
+  .bitacora-nueva button{
+    flex:none;padding:0 14px;border:none;border-radius:10px;
+    background:var(--echo-dim);color:var(--echo);font-weight:800;font-size:13px;cursor:pointer;
+  }
+
+  /* ===== VISTA DE LISTA ===== */
+  .tabla-lista{width:100%;border-collapse:collapse;font-size:12.5px}
+  .tabla-lista th{
+    text-align:left;color:var(--gray);font-weight:600;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.04em;padding:8px 6px;border-bottom:1px solid var(--border);
+    position:sticky;top:0;background:var(--scan-deep);
+  }
+  .tabla-lista td{padding:9px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+  .fila-lista{cursor:pointer}
+  .fila-lista:hover{background:rgba(111,227,212,.05)}
+  .fila-lista.malo{background:rgba(255,138,122,.06)}
+  .fila-lista .mini{display:block;color:var(--gray);font-size:11px;margin-top:1px}
+  .fila-lista .badge{font-size:11px;padding:3px 8px}
+  .fila-detalle td{padding:0;border-bottom:1px solid var(--border)}
+  .fila-detalle .lead{border-radius:0;border:none;margin-bottom:0;background:var(--scan-mid)}
+  .tabla-scroll{overflow-x:auto;margin:0 -16px;padding:0 16px}
 </style>
 </head>
 <body>
@@ -172,6 +219,7 @@
       <div class="sub" id="subFecha"></div>
     </div>
     <div style="display:flex;gap:8px">
+      <button class="btn-mini" id="btnVista">☰ Lista</button>
       <button class="btn-mini" id="btnDescargar">⬇ CSV</button>
       <button class="btn-mini" id="btnRefrescar">↻ Actualizar</button>
     </div>
@@ -194,6 +242,8 @@
     <button class="filtro" data-f="B">Prioridad B</button>
     <button class="filtro" data-f="C">Prioridad C</button>
     <button class="filtro" data-f="nuevo">Sin contactar</button>
+    <button class="filtro" data-f="contactado">Contactados</button>
+    <button class="filtro alerta" data-f="numero_incorrecto">Número incorrecto</button>
   </div>
 
   <div class="conteo" id="conteo"></div>
@@ -209,6 +259,8 @@ let PIN = sessionStorage.getItem('pin_reto_eco') || '';
 let LEADS = [];
 let FILTRO = 'todos';
 let BUSQUEDA = '';
+let VISTA = 'tarjetas';
+try { VISTA = localStorage.getItem('vista_reto_eco') || 'tarjetas'; } catch (e) {}
 
 const COLUMNAS_CSV = [
   'id','created_at','nombre','whatsapp','email','pais','perfil_profesional','pacientes_mes',
@@ -237,6 +289,7 @@ document.getElementById('btnEntrar').addEventListener('click', entrar);
 document.getElementById('inpPIN').addEventListener('keyup', e => { if (e.key === 'Enter') entrar(); });
 document.getElementById('btnRefrescar').addEventListener('click', cargarLeads);
 document.getElementById('btnDescargar').addEventListener('click', descargarCSV);
+document.getElementById('btnVista').addEventListener('click', alternarVista);
 document.getElementById('inpBuscar').addEventListener('input', e => {
   BUSQUEDA = normalizar(e.target.value);
   render();
@@ -301,6 +354,10 @@ function listaFiltrada(){
     lista = lista.filter(l => l.categoria_lead === FILTRO);
   } else if (FILTRO === 'nuevo') {
     lista = lista.filter(l => (l.estado || 'nuevo') === 'nuevo');
+  } else if (FILTRO === 'contactado') {
+    lista = lista.filter(l => ['contactado','en_conversacion','matriculado'].includes(l.estado));
+  } else if (FILTRO === 'numero_incorrecto') {
+    lista = lista.filter(l => l.estado === 'numero_incorrecto');
   }
 
   if (BUSQUEDA) {
@@ -341,6 +398,8 @@ function render(){
   document.getElementById('conteo').textContent =
     'Mostrando ' + lista.length + ' de ' + LEADS.length + ' leads';
 
+  document.getElementById('btnVista').textContent = VISTA === 'lista' ? '▦ Tarjetas' : '☰ Lista';
+
   const $l = document.getElementById('lista');
   if (!lista.length) {
     $l.innerHTML = '<div class="vacio-lista">' +
@@ -349,13 +408,28 @@ function render(){
     return;
   }
 
-  $l.innerHTML = lista.map(l => {
-    const fecha = new Date(l.created_at).toLocaleDateString('es-EC', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-    const waDigitos = (l.whatsapp || '').replace(/\D/g, '');
-    const msg = l.mensaje_apertura || '';
-    const linkWA = 'https://wa.me/' + waDigitos + (msg ? '?text=' + encodeURIComponent(msg) : '');
-    return `
-    <div class="lead">
+  if (VISTA === 'lista') {
+    renderLista($l, lista);
+  } else {
+    $l.innerHTML = lista.map(tarjetaHTML).join('');
+  }
+}
+
+function alternarVista(){
+  VISTA = VISTA === 'lista' ? 'tarjetas' : 'lista';
+  try { localStorage.setItem('vista_reto_eco', VISTA); } catch (e) {}
+  render();
+}
+
+function tarjetaHTML(l){
+  const fecha = new Date(l.created_at).toLocaleDateString('es-EC', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+  const waDigitos = (l.whatsapp || '').replace(/\D/g, '');
+  const msg = l.mensaje_apertura || '';
+  const linkWA = 'https://wa.me/' + waDigitos + (msg ? '?text=' + encodeURIComponent(msg) : '');
+  const esMalo = l.estado === 'numero_incorrecto';
+  return `
+    <div class="lead ${esMalo ? 'malo' : ''}">
+      ${esMalo ? '<span class="aviso-malo">⚠ Número incorrecto / no corresponde</span>' : ''}
       <div class="lead-top">
         <div>
           <div class="lead-nombre">${esc(l.nombre || 'Sin nombre')}</div>
@@ -370,6 +444,8 @@ function render(){
         <span>Objeción: <b>${T.objecion[l.objecion_principal] || '—'}</b></span>
         <span>Potencial: <b>$${(l.potencial_mensual || 0).toLocaleString('en-US')}/mes</b></span>
         <span>WhatsApp: <b>${esc(l.whatsapp || '—')}</b></span>
+        ${l.respuestas_detalle && l.respuestas_detalle.universidad ? `<span>Universidad: <b>${esc(l.respuestas_detalle.universidad)}</b></span>` : ''}
+        ${l.respuestas_detalle && l.respuestas_detalle.conoce_reglateco ? `<span>¿Conoce REGLATECO?: <b>${l.respuestas_detalle.conoce_reglateco === 'si' ? 'Sí' : 'No'}</b></span>` : ''}
       </div>
       <div class="lead-msg ${msg ? '' : 'vacio'}">${msg ? esc(msg) : 'Sin mensaje generado (lead guardado por respaldo directo).'}</div>
       <div class="lead-acciones">
@@ -383,18 +459,97 @@ function render(){
           ${opcionEstado(l.estado)}
         </select>
       </div>
+      <div class="bitacora">
+        <div class="bitacora-titulo">Bitácora de contacto</div>
+        <div class="bitacora-log ${l.notas ? '' : 'vacio'}" id="log-${l.id}">${bitacoraHTML(l.notas)}</div>
+        <div class="bitacora-nueva">
+          <input type="text" id="nota-${l.id}" placeholder="Ej: Llamé, no contestó / Número no corresponde / Ya se matriculó en otro lugar..." onkeyup="if(event.key==='Enter') agregarNota('${l.id}')">
+          <button onclick="agregarNota('${l.id}')">+ Agregar</button>
+        </div>
+      </div>
     </div>`;
-  }).join('');
 }
+
+function renderLista($l, lista){
+  const filas = lista.map(l => {
+    const fecha = new Date(l.created_at).toLocaleDateString('es-EC', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    const esMalo = l.estado === 'numero_incorrecto';
+    const waDigitos = (l.whatsapp || '').replace(/\D/g, '');
+    const msg = l.mensaje_apertura || '';
+    const linkWA = 'https://wa.me/' + waDigitos + (msg ? '?text=' + encodeURIComponent(msg) : '');
+    return `
+    <tr class="fila-lista ${esMalo ? 'malo' : ''}" onclick="toggleFila('${l.id}')">
+      <td>${fecha}</td>
+      <td><b>${esc(l.nombre || 'Sin nombre')}</b><span class="mini">${esc(l.pais || '')}</span></td>
+      <td><span class="badge ${l.categoria_lead || 'C'}">${l.categoria_lead || '?'}·${l.lead_score ?? 0}</span></td>
+      <td>${T.nivel[l.nivel_resultado] || '—'}</td>
+      <td>${esc(T_ESTADO[l.estado] || 'Nuevo')}</td>
+      <td><a href="${linkWA}" target="_blank" rel="noopener" onclick="event.stopPropagation()">WhatsApp →</a></td>
+    </tr>
+    <tr class="fila-detalle hidden" id="fd-${l.id}"><td colspan="6">${tarjetaHTML(l)}</td></tr>`;
+  }).join('');
+
+  $l.innerHTML = `<div class="tabla-scroll"><table class="tabla-lista">
+    <thead><tr>
+      <th>Fecha</th><th>Nombre</th><th>Cat.</th><th>Nivel</th><th>Estado</th><th>Contacto</th>
+    </tr></thead>
+    <tbody>${filas}</tbody>
+  </table></div>`;
+}
+
+function toggleFila(id){
+  const el = document.getElementById('fd-' + id);
+  if (el) el.classList.toggle('hidden');
+}
+
+const T_ESTADO = {
+  nuevo:'Nuevo', contactado:'Contactado', en_conversacion:'En conversación',
+  matriculado:'Matriculado ✓', descartado:'Descartado', numero_incorrecto:'Número incorrecto'
+};
 
 function opcionEstado(actual){
   const estados = [
     ['nuevo','Nuevo'], ['contactado','Contactado'], ['en_conversacion','En conversación'],
-    ['matriculado','Matriculado ✓'], ['descartado','Descartado']
+    ['matriculado','Matriculado ✓'], ['numero_incorrecto','Número incorrecto ✕'], ['descartado','Descartado']
   ];
   return estados.map(([v,t]) =>
     `<option value="${v}" ${ (actual||'nuevo') === v ? 'selected' : '' }>${t}</option>`
   ).join('');
+}
+
+function bitacoraHTML(notas){
+  if (!notas) return 'Sin entradas todavía.';
+  return notas.split('\n').filter(Boolean).map(linea => {
+    const m = linea.match(/^\[([^\]]+)\]\s*(.*)$/);
+    if (m) return `<div class="bitacora-entrada"><span class="sello">[${esc(m[1])}]</span>${esc(m[2])}</div>`;
+    return `<div class="bitacora-entrada">${esc(linea)}</div>`;
+  }).join('');
+}
+
+async function agregarNota(id){
+  const $inp = document.getElementById('nota-' + id);
+  if (!$inp) return;
+  const texto = $inp.value.trim();
+  if (!texto) return;
+  const l = LEADS.find(x => x.id === id);
+  if (!l) return;
+  const ahora = new Date();
+  const sello = ahora.toLocaleDateString('es-EC', { day:'2-digit', month:'2-digit' }) + ' ' +
+    ahora.toLocaleTimeString('es-EC', { hour:'2-digit', minute:'2-digit' });
+  const entrada = `[${sello}] ${texto}`;
+  const notasNuevas = entrada + (l.notas ? '\n' + l.notas : '');
+  $inp.disabled = true;
+  try {
+    await fetch(FN, {
+      method: 'POST',
+      headers: { 'x-pin': PIN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, notas: notasNuevas })
+    });
+    l.notas = notasNuevas;
+    render();
+  } catch (e) {
+    $inp.disabled = false;
+  }
 }
 
 function copiar(id){

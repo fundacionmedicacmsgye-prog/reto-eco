@@ -327,6 +327,10 @@ src="https://www.facebook.com/tr?id=637475293509186&ev=PageView&noscript=1"/></n
     display:none;font-size:13px;color:var(--coral);
     margin:-8px 0 14px;line-height:1.4;
   }
+  .reglateco-nota{
+    font-size:11.5px;color:var(--gray-tissue);line-height:1.5;
+    margin-top:8px;padding-left:10px;border-left:2px solid var(--echo-dim,rgba(111,227,212,.35));
+  }
 </style>
 </head>
 <body>
@@ -473,6 +477,19 @@ src="https://www.facebook.com/tr?id=637475293509186&ev=PageView&noscript=1"/></n
   <div class="form-grupo">
     <label for="inpWhatsapp">WhatsApp</label>
     <input type="tel" id="inpWhatsapp" autocomplete="tel" inputmode="tel" placeholder="Primero selecciona tu país">
+  </div>
+  <div class="form-grupo">
+    <label for="inpUniversidad">Universidad o institución donde estudiaste</label>
+    <input type="text" id="inpUniversidad" autocomplete="organization" placeholder="Ej: Universidad de Guayaquil">
+  </div>
+  <div class="form-grupo">
+    <label for="selReglateco">¿Conoces el Registro Latinoamericano de Ecografistas (REGLATECO)?</label>
+    <select id="selReglateco">
+      <option value="">Selecciona una opción</option>
+      <option value="si">Sí, lo conozco</option>
+      <option value="no">No, es la primera vez que escucho de él</option>
+    </select>
+    <p class="reglateco-nota">FMC — Formación Médica Continua es la única institución en Ecuador con el aval para el otorgamiento de llaves electrónicas de registro profesional en <strong>reglateco.org</strong>.</p>
   </div>
   <label class="consent">
     <input type="checkbox" id="chkConsent">
@@ -959,9 +976,11 @@ function calcularNivel(){
 }
 /* ================= GUARDADO EN SUPABASE ================= */
 async function guardarProspecto(){
-  const nombre   = document.getElementById('inpNombre').value.trim();
-  const whatsapp = document.getElementById('inpWhatsapp').value.trim();
-  const pais     = document.getElementById('selPais').value;
+  const nombre       = document.getElementById('inpNombre').value.trim();
+  const whatsapp     = document.getElementById('inpWhatsapp').value.trim();
+  const pais         = document.getElementById('selPais').value;
+  const universidad  = document.getElementById('inpUniversidad').value.trim();
+  const conoceReglateco = document.getElementById('selReglateco').value;
   const consent  = document.getElementById('chkConsent').checked;
   const $error   = document.getElementById('formError');
   const $btn     = document.getElementById('btnGuardar');
@@ -970,6 +989,8 @@ async function guardarProspecto(){
   if (digitos.length < 8 || digitos.length > 13) return mostrarError('Revisa tu número de WhatsApp: la cantidad de dígitos no parece correcta.');
   if (/^(\d)\1{5,}$/.test(digitos) || /0123456789|123456789|999999999/.test(digitos)) return mostrarError('Ingresa un número de WhatsApp real, no uno de prueba.');
   if (!pais) return mostrarError('Selecciona tu país.');
+  if (universidad.length < 3) return mostrarError('Ingresa la universidad o institución donde estudiaste.');
+  if (!conoceReglateco) return mostrarError('Selecciona una opción sobre REGLATECO.');
   if (!consent) return mostrarError('Debes autorizar el envío de tu resultado para continuar.');
   $error.style.display = 'none';
   $btn.disabled = true;
@@ -987,7 +1008,7 @@ async function guardarProspecto(){
     ha_visto_ofertas_eco: respuestas.ha_visto_ofertas_eco,
     percepcion_ventaja: respuestas.percepcion_ventaja,
     puntaje_conocimiento: respuestas.puntaje_conocimiento,
-    respuestas_detalle: respuestas.respuestas_detalle,
+    respuestas_detalle: { ...respuestas.respuestas_detalle, universidad: universidad, conoce_reglateco: conoceReglateco },
     estudios_potenciales_mes: respuestas.estudios_potenciales_mes,
     valor_promedio_eco: respuestas.valor_promedio_eco,
     objetivo_principal: respuestas.objetivo_principal,
